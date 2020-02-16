@@ -1,0 +1,24 @@
+{
+  "name": "employee-tracker",
+  "version": "1.0.0",
+  "description": "a simple CLI application that manages company's employee relationship and information",
+  "main": "employees.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "app": "node employees.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phaggio/employee-tracker.git"
+  },
+  "author": "Richard Wang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phaggio/employee-tracker/issues"
+  },
+  "homepage": "https://github.com/phaggio/employee-tracker#readme",
+  "dependencies": {
+    "inquirer": "^7.0.4",
+    "mysql": "^2.18.1"
+  }
+}
