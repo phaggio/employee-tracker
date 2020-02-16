@@ -2,10 +2,10 @@
   "name": "employee-tracker",
   "version": "1.0.0",
   "description": "a simple CLI application that manages company's employee relationship and information",
-  "main": "employees.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "app": "node employees.js"
+    "app": "node app.js"
   },
   "repository": {
     "type": "git",
