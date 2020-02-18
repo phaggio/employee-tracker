@@ -9,6 +9,10 @@ const Employee = require('./classes/employee');
 const Department = require('./classes/department');
 const Role = require('./classes/role');
 
+const newE = new Employee('Richard', 'Wang', 123, 456, 789);
+const newD = new Department(123, 'Finance');
+console.log(newE);
+console.log(newD);
 
 const connection = mysql.createConnection({
     host: '127.0.0.1',
