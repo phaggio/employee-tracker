@@ -5,6 +5,10 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 const prompts = require('./prompts');
+const Employee = require('./classes/employee');
+const Department = require('./classes/department');
+const Role = require('./classes/role');
+
 
 const connection = mysql.createConnection({
     host: '127.0.0.1',
@@ -62,10 +66,10 @@ async function departmentPrompt() {
             console.log('going to find a emp')
             break;
         case (prompts.prompts.addDepartment):
-            console.log('going to add emp')
+            console.log('need add emp func')
             break;
         case (prompts.prompts.deleteDepartment):
-            console.log('going to edit emp')
+            console.log('need edit emp func')
             break;
         case (prompts.prompts.back):
             menuPrompt();
@@ -77,7 +81,7 @@ async function departmentPrompt() {
     };
 };
 
-menuPrompt();
+// menuPrompt();
 
 // const table = cTable.getTable([
 //     {
