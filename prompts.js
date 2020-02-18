@@ -1,13 +1,42 @@
 const menu = [
     {
-        type: "list",
+        type: 'list',
         message: 'What would you like to do?',
-        name: 'menuRes',
+        name: 'menuAction',
         choices: [
-            'Add a New Employee',
+            'Employee',
+            'Department',
+            'Exit'
+        ]
+    }
+]
+
+const employee = [
+    {
+        type: 'list',
+        message: 'What would you like to do?',
+        name: 'employeeAction',
+        choices: [
+            'Find an Employee',
+            'Add an Employee',
             'Edit an Employee',
-            'View Employees',
             'Delete an Employee',
+            'Back',
+            'Exit'
+        ]
+    }
+]
+
+const department = [
+    {
+        type: 'list',
+        message: 'What would you like to do?',
+        name: 'departmentAction',
+        choices: [
+            'View All Departments',
+            'Add a Department',
+            'Delete a Department',
+            'Back',
             'Exit'
         ]
     }
@@ -27,5 +56,7 @@ const brand = `
 
 module.exports = {
     menu,
+    employee,
+    department,
     brand
 }
