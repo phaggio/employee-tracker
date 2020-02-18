@@ -1,46 +1,55 @@
-const menu = [
-    {
-        type: 'list',
-        message: 'What would you like to do?',
-        name: 'menuAction',
-        choices: [
-            'Employee',
-            'Department',
-            'Exit'
-        ]
-    }
-]
+const prompts = {
+    employee: 'Employee',
+    department: 'Department',
+    findEmployee: 'Find an Employee',
+    addEmployee: 'Add an Employee',
+    editEmployee: 'Edit an Employee',
+    deleteEmployee: 'Delete an Employee',
+    viewDepartment: 'View All Departments',
+    addDepartment: 'Add a Department',
+    deleteDepartment: 'Delete a Department',
+    back: 'Back',
+    exit: 'Exit'
+}
 
-const employee = [
-    {
-        type: 'list',
-        message: 'What would you like to do?',
-        name: 'employeeAction',
-        choices: [
-            'Find an Employee',
-            'Add an Employee',
-            'Edit an Employee',
-            'Delete an Employee',
-            'Back',
-            'Exit'
-        ]
-    }
-]
+const menu = {
+    type: 'list',
+    message: 'What would you like to do?',
+    name: 'menuAction',
+    choices: [
+        'Employee',
+        'Department',
+        'Exit'
+    ]
+}
 
-const department = [
-    {
-        type: 'list',
-        message: 'What would you like to do?',
-        name: 'departmentAction',
-        choices: [
-            'View All Departments',
-            'Add a Department',
-            'Delete a Department',
-            'Back',
-            'Exit'
-        ]
-    }
-]
+
+const employee = {
+    type: 'list',
+    message: 'What would you like to do?',
+    name: 'employeeAction',
+    choices: [
+        'Find an Employee',
+        'Add an Employee',
+        'Edit an Employee',
+        'Delete an Employee',
+        'Back',
+        'Exit'
+    ]
+}
+
+const department = {
+    type: 'list',
+    message: 'What would you like to do?',
+    name: 'departmentAction',
+    choices: [
+        'View All Departments',
+        'Add a Department',
+        'Delete a Department',
+        'Back',
+        'Exit'
+    ]
+}
 
 
 const brand = `
@@ -55,6 +64,7 @@ const brand = `
 `
 
 module.exports = {
+    prompts,
     menu,
     employee,
     department,
