@@ -127,19 +127,21 @@ function viewAllEmployee() {
 async function addEmployee() {
     const employeeObj = await inquirer.prompt(prompts.employee);
     const roleObj = await rolePrompt(employeeObj.department);
+    const departmentId = await getDepartmentId(employeeObj.department);
     const managerId = await getManagerId(employeeObj.department);
 
-    console.log(employeeObj, roleObj, managerId);
+    console.log(employeeObj, roleObj, departmentId, managerId);
 };
 
 addEmployee();
 
 async function getDepartmentId(department) {
-    connection.query(query.getDepartmentId, { name: department }, (err, id) => {
-        if (err) throw err;
-        console.log(`Passing ${id[0].id}`);
-        return id[0].id;
-    });
+    try {
+        const departmentObj = await db.query(query.getDepartmentId, { name: department });
+        return departmentObj[0].id;
+    } catch (err) {
+        console.error(err);
+    }
 };
 
 async function rolePrompt(department) {
@@ -169,43 +171,14 @@ async function getManagerId(department) {
             choices: managerNameArr
         });
         if (selectedManagerName.name === 'None') {
-            console.log(null);
             return null;
         };
         const selectedManager = managerNameArr.filter(manager => manager.name === selectedManagerName.name);
-        // console.log(selectedManager[0].id);
         return selectedManager[0].id;
     } catch (err) {
         console.error(err)
-    } finally {
-        await db.close();
-    }
-
-
-    // , (err, resObjs) => {
-    // if (err)
-    //     throw err;
-    // if (resObjs) {
-    //     for (const resObj of resObjs) {
-    //         managerNameArr.push(resObj.name);
-    //     }
-    // }
-    // return managerNameArr;
-    // const selectedMgrNameObj = await inquirer.prompt({
-    //     type: 'list',
-    //     message: `Who is this employee's manager?`,
-    //     name: 'name',
-    //     choices: managerObjArr
-    // });
-    // if (selectedMgrNameObj.name === 'None') {
-    //     return null;
-    // };
-    // let selectedMgrArr = managerObjArr.filter(manager => manager.name === selectedMgrNameObj.name);
-    // console.log(selectedMgrArr[0].id);
-    // return selectedMgrArr[0].id;
-
+    } 
 };
-
 
 const endConnection = () => {
     console.log('Goodbye!');
