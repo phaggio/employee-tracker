@@ -5,14 +5,10 @@ const mysql = require('mysql');
 const inquirer = require('inquirer');
 const cTable = require('console.table');
 const prompts = require('./prompts');
+const query = require('./queries');
 const Employee = require('./classes/employee');
 const Department = require('./classes/department');
 const Role = require('./classes/role');
-
-const newE = new Employee('Richard', 'Wang', 123, 456, 789);
-// const newD = new Department(123, 'Finance');
-// console.log(newE);
-// console.log(newD);
 
 const connection = mysql.createConnection({
     host: '127.0.0.1',
@@ -22,9 +18,7 @@ const connection = mysql.createConnection({
     database: 'employeesDB'
 });
 
-// init();
-
-function init() {
+const init = () => {
     console.log(prompts.brand);
     menuPrompt();
 };
@@ -39,7 +33,7 @@ async function menuPrompt() {
             departmentPrompt();
             break;
         case (prompts.prompts.exit):
-            console.log(`Goodbye!`);
+            endConnection();
             break;
         default:
             break;
@@ -49,6 +43,9 @@ async function menuPrompt() {
 async function employeePrompt() {
     const employeeAction = await inquirer.prompt(prompts.employeeMenu);
     switch (employeeAction.employeeAction) {
+        case (prompts.prompts.viewAllEmployee):
+            viewAllEmployee();
+            break;
         case (prompts.prompts.findEmployee):
             console.log('going to find a emp')
             break;
@@ -65,6 +62,7 @@ async function employeePrompt() {
             menuPrompt();
             break;
         case (prompts.prompts.exit):
+            endConnection();
             break;
         default:
             break;
@@ -87,18 +85,26 @@ async function departmentPrompt() {
             menuPrompt();
             break;
         case (prompts.prompts.exit):
+            endConnection();
             break;
         default:
             break;
     };
 };
 
+function viewAllEmployee() {
+    connection.query(query.viewAllEmployees, (err, res) => {
+        if (err) throw err;
+        console.table(res);
+        employeePrompt();
+    });
+};
 
 async function addEmployee() {
     const employeeObj = await inquirer.prompt(prompts.employee);
     const role = await rolePrompt(employeeObj.department);
-    const mgrArr = await findManager(employeeObj.department);
-    console.log(mgrArr);
+    const mgr = await findManager(employeeObj.department);
+
 }
 
 async function rolePrompt(department) {
@@ -115,30 +121,37 @@ async function rolePrompt(department) {
 }
 
 async function findManager(department) {
-    let managerArr = [];
-    connection.query(
-        `SELECT concat(e.first_name, ' ', e.last_name) as name, e.id
-        FROM employee e 
-            join role r 
-            on e.role_id = r.id 
-            join department d 
-            on r.department_id = d.id 
-        WHERE d.name = '${department}' and r.title = 'Manager'`, (err, resObjs) => {
+    let managerNameArr = [];
+    let managerIdArr = [];
+    let managerObjArr = [];
+    connection.query(query.findManagerQuery, department, (err, resObjs) => {
         if (err) throw err;
         if (resObjs) {
             for (const resObj of resObjs) {
-                console.log(resObj);
-                const managerObj = { name: resObj.name, id: resObj.id };
-                console.log(managerObj);
-                managerArr.push(managerObj);
-            }
-            return managerArr;
+                managerNameArr.push(resObj.name);
+                managerIdArr.push(resObj.id);
+            };
         };
+        const manager = inquirer.prompt({
+            type: 'list',
+            message: `Who is this employee's manager?`,
+            name: 'manager',
+            choices: managerObjArr
+        })
+        console.log(manager);
+        return manager.manager;
     })
+};
+
+
+const endConnection = () => {
+    console.log('Goodbye!');
     connection.end();
 };
 
-addEmployee();
+init();
+
+// findManager('Engineering');
 
 // const table = cTable.getTable([
 //     {

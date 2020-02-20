@@ -1,6 +1,7 @@
 const prompts = {
     employee: 'Employee',
     department: 'Department',
+    viewAllEmployee: 'View All Employees',
     findEmployee: 'Find an Employee',
     addEmployee: 'Add an Employee',
     editEmployee: 'Edit an Employee',
@@ -28,6 +29,7 @@ const employeeMenu = {
     message: 'What would you like to do?',
     name: 'employeeAction',
     choices: [
+        'View All Employees',
         'Find an Employee',
         'Add an Employee',
         'Edit an Employee',
