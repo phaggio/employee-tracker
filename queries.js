@@ -16,6 +16,15 @@ FROM
     on r.department_id = d.id
 ;`
 
+const getDepartmentId = `
+SELECT
+	id
+FROM
+	department
+WHERE
+    ?;
+`
+
 const findManagerQuery = `
 SELECT 
     concat(e.first_name, ' ', e.last_name) as name
@@ -31,7 +40,9 @@ WHERE
 ;`
 
 
+
 module.exports = {
     viewAllEmployees,
+    getDepartmentId,
     findManagerQuery
 }

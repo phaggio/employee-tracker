@@ -75,6 +75,18 @@ const employee = [
     }
 ]
 
+const department = {
+    type: 'list',
+    message: `What is employee's department?`,
+    name: `department`,
+    choices: [
+        `Finance`,
+        `Engineering`,
+        `Marketing`
+    ]
+}
+
+
 const role = {
     finance: {
         type: 'list',
@@ -127,5 +139,6 @@ module.exports = {
     departmentMenu,
     brand,
     employee,
+    department,
     role
 }

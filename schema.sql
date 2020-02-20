@@ -72,3 +72,10 @@ FROM
     on e.role_id = r.id
     join department d
     on r.department_id = d.id;
+    
+SELECT
+	id
+FROM
+	department
+WHERE
+	name = 'Engineering';

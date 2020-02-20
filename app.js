@@ -3,6 +3,7 @@ console.clear();
 
 const mysql = require('mysql');
 const inquirer = require('inquirer');
+const util = require('util');
 const cTable = require('console.table');
 const prompts = require('./prompts');
 const query = require('./queries');
@@ -10,13 +11,36 @@ const Employee = require('./classes/employee');
 const Department = require('./classes/department');
 const Role = require('./classes/role');
 
-const connection = mysql.createConnection({
+const sqlConfig = {
     host: '127.0.0.1',
     port: 3306,
     user: 'root',
     password: 'password',
     database: 'employeesDB'
-});
+}
+
+function connectDatabase(config) {
+    const connection = mysql.createConnection(config);
+    return {
+        query(sql, args) {
+            return util.promisify(connection.query)
+                .call(connection, sql, args);
+        },
+        close() {
+            return util.promisify(connection.end).call(connection);
+        }
+    };
+};
+
+const db = connectDatabase(sqlConfig);
+
+// const connection = mysql.createConnection({
+//     host: '127.0.0.1',
+//     port: 3306,
+//     user: 'root',
+//     password: 'password',
+//     database: 'employeesDB'
+// });
 
 const init = () => {
     console.log(prompts.brand);
@@ -102,10 +126,21 @@ function viewAllEmployee() {
 
 async function addEmployee() {
     const employeeObj = await inquirer.prompt(prompts.employee);
-    const role = await rolePrompt(employeeObj.department);
-    const mgr = await findManager(employeeObj.department);
+    const roleObj = await rolePrompt(employeeObj.department);
+    const managerId = await getManagerId(employeeObj.department);
 
-}
+    console.log(employeeObj, roleObj, managerId);
+};
+
+addEmployee();
+
+async function getDepartmentId(department) {
+    connection.query(query.getDepartmentId, { name: department }, (err, id) => {
+        if (err) throw err;
+        console.log(`Passing ${id[0].id}`);
+        return id[0].id;
+    });
+};
 
 async function rolePrompt(department) {
     switch (department) {
@@ -118,29 +153,57 @@ async function rolePrompt(department) {
         default:
             break;
     };
-}
+};
 
-async function findManager(department) {
-    let managerNameArr = [];
-    let managerIdArr = [];
-    let managerObjArr = [];
-    connection.query(query.findManagerQuery, department, (err, resObjs) => {
-        if (err) throw err;
-        if (resObjs) {
-            for (const resObj of resObjs) {
-                managerNameArr.push(resObj.name);
-                managerIdArr.push(resObj.id);
-            };
-        };
-        const manager = inquirer.prompt({
+async function getManagerId(department) {
+    let managerNameArr = ['None'];
+    try {
+        const managerObjArr = await db.query(query.findManagerQuery, department);
+        for (const managerObj of managerObjArr) {
+            managerNameArr.push(managerObj);
+        }
+        const selectedManagerName = await inquirer.prompt({
             type: 'list',
             message: `Who is this employee's manager?`,
-            name: 'manager',
-            choices: managerObjArr
-        })
-        console.log(manager);
-        return manager.manager;
-    })
+            name: 'name',
+            choices: managerNameArr
+        });
+        if (selectedManagerName.name === 'None') {
+            console.log(null);
+            return null;
+        };
+        const selectedManager = managerNameArr.filter(manager => manager.name === selectedManagerName.name);
+        // console.log(selectedManager[0].id);
+        return selectedManager[0].id;
+    } catch (err) {
+        console.error(err)
+    } finally {
+        await db.close();
+    }
+
+
+    // , (err, resObjs) => {
+    // if (err)
+    //     throw err;
+    // if (resObjs) {
+    //     for (const resObj of resObjs) {
+    //         managerNameArr.push(resObj.name);
+    //     }
+    // }
+    // return managerNameArr;
+    // const selectedMgrNameObj = await inquirer.prompt({
+    //     type: 'list',
+    //     message: `Who is this employee's manager?`,
+    //     name: 'name',
+    //     choices: managerObjArr
+    // });
+    // if (selectedMgrNameObj.name === 'None') {
+    //     return null;
+    // };
+    // let selectedMgrArr = managerObjArr.filter(manager => manager.name === selectedMgrNameObj.name);
+    // console.log(selectedMgrArr[0].id);
+    // return selectedMgrArr[0].id;
+
 };
 
 
@@ -149,7 +212,7 @@ const endConnection = () => {
     connection.end();
 };
 
-init();
+// init();
 
 // findManager('Engineering');
 
@@ -189,3 +252,4 @@ init();
 //     console.log(`connected with id  ${connection.threadId}`);
 //     connection.end();
 // });
+
