@@ -12,7 +12,7 @@ const prompts = {
     exit: 'Exit'
 }
 
-const menu = {
+const mainMenu = {
     type: 'list',
     message: 'What would you like to do?',
     name: 'menuAction',
@@ -23,8 +23,7 @@ const menu = {
     ]
 }
 
-
-const employee = {
+const employeeMenu = {
     type: 'list',
     message: 'What would you like to do?',
     name: 'employeeAction',
@@ -38,7 +37,7 @@ const employee = {
     ]
 }
 
-const department = {
+const departmentMenu = {
     type: 'list',
     message: 'What would you like to do?',
     name: 'departmentAction',
@@ -49,6 +48,62 @@ const department = {
         'Back',
         'Exit'
     ]
+}
+
+const employee = [
+    {
+        type: 'input',
+        message: `What is employee's first name?`,
+        name: `firstName`
+    },
+    {
+        type: 'input',
+        message: `What is employee's last name?`,
+        name: `lastName`
+    },
+    {
+        type: 'list',
+        message: `What is employee's department?`,
+        name: `department`,
+        choices: [
+            `Finance`,
+            `Engineering`,
+            `Marketing`
+        ]
+    }
+]
+
+const role = {
+    finance: {
+        type: 'list',
+        message: `What is employee's role?`,
+        name: `role`,
+        choices: [
+            `Manager`,
+            `Sr. Analyst`,
+            `Analyst`
+        ]
+    },
+    engineering: {
+        type: 'list',
+        message: `What is employee's role?`,
+        name: `role`,
+        choices: [
+            `Manager`,
+            `Sr. Software Engineer`,
+            `Software Engineer`
+        ]
+    },
+    marketing: {
+        type: 'list',
+        message: `What is employee's role?`,
+        name: `role`,
+        choices: [
+            `Manager`,
+            `Channel Manager`,
+            `Marketing Specialist`
+        ]
+    }
 }
 
 
@@ -65,8 +120,10 @@ const brand = `
 
 module.exports = {
     prompts,
-    menu,
+    mainMenu,
+    employeeMenu,
+    departmentMenu,
+    brand,
     employee,
-    department,
-    brand
+    role
 }
