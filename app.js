@@ -117,11 +117,16 @@ async function viewAllEmployee() {
 };
 
 async function addEmployee() {
-    const employeeObj = await inquirer.prompt(prompts.employee);
-    const roleNameObj = await rolePrompt(employeeObj.department);
-    const roleId = await getRoleId(roleNameObj.role);
-    // const departmentId = await getDepartmentId(employeeObj.department);
-    const managerId = await getDepartmentManagerId(employeeObj.department);
+    const employeeObj = await inquirer.prompt(prompts.addEmployee);
+    const department = await getAllDepartments();
+
+    const roleName = await getDepartmentRoles(department);
+    const departmentId = await getDepartmentId(department);
+
+    const roleId = await getRoleId(roleName, departmentId);
+
+    const managerId = await getDepartmentManagerId(department);
+
     const newEmployee = new Employee(employeeObj.firstName, employeeObj.lastName, roleId, managerId);
     await db.query(query.addEmployee, newEmployee, (err, res) => {
         if (err) throw err;
@@ -130,9 +135,41 @@ async function addEmployee() {
     viewAllEmployee();
 };
 
-async function getRoleId(role) {
+async function getAllDepartments() {
     try {
-        const roleObj = await db.query(query.getRoleId, { title: role });
+        const departmentObjArr = await db.query(query.getAllDepartments);
+        // console.log(departmentObjArr);
+        const selectedDepartmentObj = await inquirer.prompt({
+            type: 'list',
+            message: `What is this employee's department?`,
+            name: 'name',
+            choices: departmentObjArr
+        })
+        // console.log(selectedDepartmentObj);
+        return selectedDepartmentObj.name;
+    } catch (err) {
+        console.error(err)
+    };
+};
+
+async function getDepartmentRoles(department) {
+    try {
+        const departmentRoleObjArr = await db.query(query.getDepartmentRoles, department);
+        const selectedRoleObj = await inquirer.prompt({
+            type: 'list',
+            message: `What is this employee's role?`,
+            name: 'name',
+            choices: departmentRoleObjArr
+        })
+        return selectedRoleObj.name;
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function getRoleId(role, departmentId) {
+    try {
+        const roleObj = await db.query(query.getRoleId, [role, departmentId]);
         return roleObj[0].id;
     } catch (err) {
         console.error(err);

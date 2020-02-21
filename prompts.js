@@ -52,7 +52,7 @@ const departmentMenu = {
     ]
 }
 
-const employee = [
+const addEmployee = [
     {
         type: 'input',
         message: `What is employee's first name?`,
@@ -62,16 +62,6 @@ const employee = [
         type: 'input',
         message: `What is employee's last name?`,
         name: `lastName`
-    },
-    {
-        type: 'list',
-        message: `What is employee's department?`,
-        name: `department`,
-        choices: [
-            `Finance`,
-            `Engineering`,
-            `Marketing`
-        ]
     }
 ]
 
@@ -138,7 +128,7 @@ module.exports = {
     employeeMenu,
     departmentMenu,
     brand,
-    employee,
+    addEmployee,
     department,
     role
 }

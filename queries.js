@@ -35,7 +35,8 @@ SELECT
 FROM
     role
 WHERE
-    ?;
+    title = ?
+    AND department_id = ?;
 `
 
 const findDepartmentManagerQuery = `
@@ -55,12 +56,30 @@ WHERE
 const addEmployee = `
 INSERT INTO employee
 SET ?
-`
+;`
+
+const getAllDepartments = `
+SELECT *
+FROM department
+;`
+
+const getDepartmentRoles = `
+SELECT
+    r.title as name
+FROM
+    department d
+    join role r
+    on d.id = r.department_id
+WHERE
+    d.name = ?
+;`
 
 module.exports = {
     viewAllEmployees,
     getDepartmentId,
     getRoleId,
     findDepartmentManagerQuery,
-    addEmployee
+    addEmployee,
+    getAllDepartments,
+    getDepartmentRoles
 }
