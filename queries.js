@@ -20,7 +20,7 @@ FROM
     on e.manager_id = m.id
 ;`
 
-const getDepartmentId = `
+const getDepartmentIdByDepartmentName = `
 SELECT
 	id
 FROM
@@ -29,7 +29,7 @@ WHERE
     ?;
 `
 
-const getRoleId = `
+const getRoleIdByTitleAndDepartment = `
 SELECT
     id
 FROM
@@ -74,12 +74,47 @@ WHERE
     d.name = ?
 ;`
 
+const findEmployee = `
+SELECT
+    id as ID
+    , first_name as 'First Name'
+    , last_name as 'Last Name'
+    , title as 'Title'
+    , salary as 'Salary'
+    , department as 'Department'
+    , manager as 'Manager'
+FROM
+    (
+    SELECT
+        e.id
+        , e.first_name
+        , e.last_name
+        , r.title
+        , r.salary
+        , d.name as department
+        , case when m.last_name is null then ''
+            else concat(m.first_name, ' ', m.last_name) end as 'manager'
+    FROM
+        employee e
+        join role r
+        on e.role_id = r.id
+        join department d
+        on r.department_id = d.id
+        left join employee m
+        on e.manager_id = m.id
+    ) a
+WHERE
+    ?
+;
+`
+
 module.exports = {
     viewAllEmployees,
-    getDepartmentId,
-    getRoleId,
+    getDepartmentIdByDepartmentName,
+    getRoleIdByTitleAndDepartment,
     findDepartmentManagerQuery,
     addEmployee,
     getAllDepartments,
-    getDepartmentRoles
+    getDepartmentRoles,
+    findEmployee
 }

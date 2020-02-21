@@ -38,6 +38,8 @@ const init = () => {
     menuPrompt();
 };
 
+
+
 async function menuPrompt() {
     const menuAction = await inquirer.prompt(prompts.mainMenu);
     switch (menuAction.menuAction) {
@@ -48,7 +50,7 @@ async function menuPrompt() {
             departmentPrompt();
             break;
         case (prompts.prompts.exit):
-            endConnection();
+            goodbye();
             break;
         default:
             break;
@@ -62,22 +64,16 @@ async function employeePrompt() {
             viewAllEmployee();
             break;
         case (prompts.prompts.findEmployee):
-            console.log('going to find a emp')
+            promptFindEmployeeMethod();
             break;
         case (prompts.prompts.addEmployee):
-            addEmployee();
-            break;
-        case (prompts.prompts.editEmployee):
-            console.log('going to edit emp')
-            break;
-        case (prompts.prompts.deleteEmployee):
-            console.log('going to delete emp')
+            promptAddEmployee();
             break;
         case (prompts.prompts.back):
             menuPrompt();
             break;
         case (prompts.prompts.exit):
-            endConnection();
+            goodbye();
             break;
         default:
             break;
@@ -100,7 +96,7 @@ async function departmentPrompt() {
             menuPrompt();
             break;
         case (prompts.prompts.exit):
-            endConnection();
+            goodbye();
             break;
         default:
             break;
@@ -113,33 +109,18 @@ async function viewAllEmployee() {
     employeePrompt();
 };
 
-async function queryAllEmployees() {
-    try {
-        return db.query(query.viewAllEmployees)
-    } catch (err) {
-        console.error(err);
-    };
-};
 
-async function queryAllDepartments() {
-    try {
-        return await db.query(query.getAllDepartments);
-    } catch (err) {
-        console.error(err);
-    };
-};
 
-init();
 
-async function addEmployee() {
+async function promptAddEmployee() {
     const employeeObj = await inquirer.prompt(prompts.addEmployee);
-    const department = await getAllDepartments();
+    const department = await promptDepartmentSelection();
     console.log(department)
 
-    const roleName = await getDepartmentRoles(department);
-    const departmentId = await getDepartmentId(department);
+    const roleName = await promptDepartmentRoles(department);
+    const departmentId = await getDepartmentIdByDepartmentName(department);
 
-    const roleId = await getRoleId(roleName, departmentId);
+    const roleId = await getRoleIdByTitleAndDepartment(roleName, departmentId);
 
     const managerId = await getDepartmentManagerId(department);
 
@@ -151,7 +132,7 @@ async function addEmployee() {
     viewAllEmployee();
 };
 
-async function getAllDepartments() {
+async function promptDepartmentSelection() {
     try {
         const departmentObjArr = await queryAllDepartments();
         const selectedDepartmentObj = await inquirer.prompt({
@@ -166,7 +147,7 @@ async function getAllDepartments() {
     };
 };
 
-async function getDepartmentRoles(department) {
+async function promptDepartmentRoles(department) {
     try {
         const departmentRoleObjArr = await db.query(query.getDepartmentRoles, department);
         const selectedRoleObj = await inquirer.prompt({
@@ -179,20 +160,87 @@ async function getDepartmentRoles(department) {
     } catch (err) {
         console.error(err);
     }
-}
+};
 
-async function getRoleId(role, departmentId) {
+async function promptFindEmployeeMethod() {
+    const selectedMethod = await inquirer.prompt(prompts.findEmployee);
+    const method = selectedMethod.method;
+    switch (method) {
+        case (prompts.prompts.id):
+            const idObj = await promptIdInput();
+            const employee = await queryEmployee(idObj);
+            console.table(employee);
+            break;
+        case (prompts.prompts.firstName):
+            promptFirstNameInput();
+            break;
+        case (prompts.prompts.lastName):
+            promptLastNameInput();
+            break;
+        case (prompts.prompts.back):
+            employeePrompt();
+            break;
+        case (prompts.prompts.exit):
+            goodbye();
+            break;
+    };
+};
+
+async function promptIdInput() {
+    const idObj = await inquirer.prompt(prompts.idInupt);
+    console.log(idObj);
+    return idObj;
+};
+
+async function promptFirstNameInput() {
+    const firstNameObj = await inquirer.prompt(prompts.firstNameInupt);
+    console.log(firstNameObj);
+    return firstNameObj;
+};
+
+async function promptLastNameInput() {
+    const lastNameObj = await inquirer.prompt(prompts.lastNameInupt);
+    console.log(lastNameObj);
+    return lastNameObj;
+};
+
+// SQL functions
+async function queryAllEmployees() {
     try {
-        const roleObj = await db.query(query.getRoleId, [role, departmentId]);
+        return db.query(query.viewAllEmployees)
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function queryEmployee(obj) {
+    try {
+        return await db.query(query.findEmployee, obj);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function queryAllDepartments() {
+    try {
+        return await db.query(query.getAllDepartments);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function getRoleIdByTitleAndDepartment(role, departmentId) {
+    try {
+        const roleObj = await db.query(query.getRoleIdByTitleAndDepartment, [role, departmentId]);
         return roleObj[0].id;
     } catch (err) {
         console.error(err);
     };
 };
 
-async function getDepartmentId(department) {
+async function getDepartmentIdByDepartmentName(department) {
     try {
-        const departmentObj = await db.query(query.getDepartmentId, { name: department });
+        const departmentObj = await db.query(query.getDepartmentIdByDepartmentName, { name: department });
         return departmentObj[0].id;
     } catch (err) {
         console.error(err);
@@ -223,31 +271,9 @@ async function getDepartmentManagerId(department) {
     }
 };
 
-const endConnection = () => {
+const goodbye = () => {
+    console.clear();
     console.log('Goodbye!');
     db.close();
 };
 
-// init();
-
-// findManager('Engineering');
-
-// const table = cTable.getTable([
-//     {
-//         name: 'foo',
-//         age: 10
-//     }, {
-//         name: 'bar',
-//         age: 20
-//     }
-// ])
-
-// console.table([
-//     {
-//       name: 'foo',
-//       age: 10
-//     }, {
-//       name: 'bar',
-//       age: 20
-//     }
-//   ]);

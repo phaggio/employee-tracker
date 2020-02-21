@@ -13,13 +13,20 @@ const prompts = {
     employee: 'Employee',
     department: 'Department',
     viewAllEmployee: 'View All Employees',
-    findEmployee: 'Find an Employee',
     addEmployee: 'Add an Employee',
+
+    findEmployee: 'Find an Employee',
+    id: 'ID',
+    firstName: 'First Name',
+    lastName: 'Last Name',
+
     editEmployee: 'Edit an Employee',
     deleteEmployee: 'Delete an Employee',
+
     viewDepartment: 'View All Departments',
     addDepartment: 'Add a Department',
     deleteDepartment: 'Delete a Department',
+
     back: 'Back',
     exit: 'Exit'
 }
@@ -43,8 +50,6 @@ const employeeMenu = {
         'View All Employees',
         'Find an Employee',
         'Add an Employee',
-        'Edit an Employee',
-        'Delete an Employee',
         'Back',
         'Exit'
     ]
@@ -76,49 +81,48 @@ const addEmployee = [
     }
 ]
 
+const findEmployee = {
+    type: 'list',
+    message: 'What would you like to search the employee by?',
+    name: 'method',
+    choices: [
+        'ID',
+        'First Name',
+        'Last Name',
+        'Back',
+        'Exit'
+    ]
+}
 
-const role = {
-    finance: {
-        type: 'list',
-        message: `What is employee's role?`,
-        name: `role`,
-        choices: [
-            `Manager`,
-            `Sr. Analyst`,
-            `Analyst`
-        ]
-    },
-    engineering: {
-        type: 'list',
-        message: `What is employee's role?`,
-        name: `role`,
-        choices: [
-            `Manager`,
-            `Sr. Software Engineer`,
-            `Software Engineer`
-        ]
-    },
-    marketing: {
-        type: 'list',
-        message: `What is employee's role?`,
-        name: `role`,
-        choices: [
-            `Manager`,
-            `Channel Manager`,
-            `Marketing Specialist`
-        ]
-    }
+const idInupt = {
+    type: 'input',
+    message: `What is employee's ID?`,
+    name: 'id'
+}
+
+const firstNameInupt = {
+    type: 'input',
+    message: `What is employee's first name?`,
+    name: 'first_name'
+}
+
+const lastNameInupt = {
+    type: 'input',
+    message: `What is employee's last name?`,
+    name: 'last_name'
 }
 
 
-
-
 module.exports = {
+    brand,
     prompts,
     mainMenu,
     employeeMenu,
     departmentMenu,
-    brand,
     addEmployee,
-    role
+    findEmployee,
+    idInupt,
+    firstNameInupt,
+    lastNameInupt
+
 }
