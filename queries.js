@@ -8,12 +8,16 @@ SELECT
     , r.title as 'Title'
     , r.salary as 'Salary'
     , d.name as 'Department'
+    , case when m.last_name is null then ''
+        else concat(m.first_name, ' ', m.last_name) end as 'Manager'
 FROM
 	employee e
     join role r
     on e.role_id = r.id
     join department d
     on r.department_id = d.id
+    left join employee m
+    on e.manager_id = m.id
 ;`
 
 const getDepartmentId = `
