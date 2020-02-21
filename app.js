@@ -17,7 +17,7 @@ const sqlConfig = {
     user: 'root',
     password: 'password',
     database: 'employeesDB'
-}
+};
 
 function connectDatabase(config) {
     const connection = mysql.createConnection(config);
@@ -109,16 +109,25 @@ async function departmentPrompt() {
 };
 
 async function viewAllEmployee() {
-    db.query(query.viewAllEmployees, (err, res) => {
-        if (err) throw err;
-        console.table(res);
-        employeePrompt();
-    });
+    const allEmployees = await queryAllEmployees();
+    console.table(allEmployees);
+    employeePrompt();
 };
+
+async function queryAllEmployees() {
+    try {
+        return db.query(query.viewAllEmployees)
+    } catch (err) {
+        console.error(err)
+    };
+};
+
+viewAllEmployee();
 
 async function addEmployee() {
     const employeeObj = await inquirer.prompt(prompts.addEmployee);
     const department = await getAllDepartments();
+    console.log(department)
 
     const roleName = await getDepartmentRoles(department);
     const departmentId = await getDepartmentId(department);
@@ -185,18 +194,6 @@ async function getDepartmentId(department) {
     };
 };
 
-async function rolePrompt(department) {
-    switch (department) {
-        case (`Finance`):
-            return await inquirer.prompt(prompts.role.finance);
-        case (`Engineering`):
-            return await inquirer.prompt(prompts.role.engineering);
-        case (`Marketing`):
-            return await inquirer.prompt(prompts.role.marketing);
-        default:
-            break;
-    };
-};
 
 async function getDepartmentManagerId(department) {
     let managerNameArr = ['None'];
@@ -226,7 +223,7 @@ const endConnection = () => {
     db.close();
 };
 
-init();
+// init();
 
 // findManager('Engineering');
 
@@ -249,21 +246,3 @@ init();
 //       age: 20
 //     }
 //   ]);
-
-
-
-
-
-
-
-
-
-
-
-// connect to SQL database
-// connection.connect(err => {
-//     if (err) throw err;
-//     console.log(`connected with id  ${connection.threadId}`);
-//     connection.end();
-// });
-
