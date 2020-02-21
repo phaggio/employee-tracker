@@ -1,5 +1,4 @@
 'use strict'
-console.clear();
 
 const mysql = require('mysql');
 const inquirer = require('inquirer');
@@ -118,11 +117,19 @@ async function queryAllEmployees() {
     try {
         return db.query(query.viewAllEmployees)
     } catch (err) {
-        console.error(err)
+        console.error(err);
     };
 };
 
-viewAllEmployee();
+async function queryAllDepartments() {
+    try {
+        return await db.query(query.getAllDepartments);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+init();
 
 async function addEmployee() {
     const employeeObj = await inquirer.prompt(prompts.addEmployee);
@@ -146,15 +153,13 @@ async function addEmployee() {
 
 async function getAllDepartments() {
     try {
-        const departmentObjArr = await db.query(query.getAllDepartments);
-        // console.log(departmentObjArr);
+        const departmentObjArr = await queryAllDepartments();
         const selectedDepartmentObj = await inquirer.prompt({
             type: 'list',
             message: `What is this employee's department?`,
             name: 'name',
             choices: departmentObjArr
         })
-        // console.log(selectedDepartmentObj);
         return selectedDepartmentObj.name;
     } catch (err) {
         console.error(err)
