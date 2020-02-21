@@ -34,14 +34,6 @@ function connectDatabase(config) {
 
 const db = connectDatabase(sqlConfig);
 
-// const connection = mysql.createConnection({
-//     host: '127.0.0.1',
-//     port: 3306,
-//     user: 'root',
-//     password: 'password',
-//     database: 'employeesDB'
-// });
-
 const init = () => {
     console.log(prompts.brand);
     menuPrompt();
@@ -116,8 +108,8 @@ async function departmentPrompt() {
     };
 };
 
-function viewAllEmployee() {
-    connection.query(query.viewAllEmployees, (err, res) => {
+async function viewAllEmployee() {
+    db.query(query.viewAllEmployees, (err, res) => {
         if (err) throw err;
         console.table(res);
         employeePrompt();
@@ -126,14 +118,26 @@ function viewAllEmployee() {
 
 async function addEmployee() {
     const employeeObj = await inquirer.prompt(prompts.employee);
-    const roleObj = await rolePrompt(employeeObj.department);
-    const departmentId = await getDepartmentId(employeeObj.department);
-    const managerId = await getManagerId(employeeObj.department);
-
-    console.log(employeeObj, roleObj, departmentId, managerId);
+    const roleNameObj = await rolePrompt(employeeObj.department);
+    const roleId = await getRoleId(roleNameObj.role);
+    // const departmentId = await getDepartmentId(employeeObj.department);
+    const managerId = await getDepartmentManagerId(employeeObj.department);
+    const newEmployee = new Employee(employeeObj.firstName, employeeObj.lastName, roleId, managerId);
+    await db.query(query.addEmployee, newEmployee, (err, res) => {
+        if (err) throw err;
+        console.log(`\n${res.affectedRows} employee added.\n`);
+    });
+    viewAllEmployee();
 };
 
-addEmployee();
+async function getRoleId(role) {
+    try {
+        const roleObj = await db.query(query.getRoleId, { title: role });
+        return roleObj[0].id;
+    } catch (err) {
+        console.error(err);
+    };
+};
 
 async function getDepartmentId(department) {
     try {
@@ -141,7 +145,7 @@ async function getDepartmentId(department) {
         return departmentObj[0].id;
     } catch (err) {
         console.error(err);
-    }
+    };
 };
 
 async function rolePrompt(department) {
@@ -157,10 +161,10 @@ async function rolePrompt(department) {
     };
 };
 
-async function getManagerId(department) {
+async function getDepartmentManagerId(department) {
     let managerNameArr = ['None'];
     try {
-        const managerObjArr = await db.query(query.findManagerQuery, department);
+        const managerObjArr = await db.query(query.findDepartmentManagerQuery, department);
         for (const managerObj of managerObjArr) {
             managerNameArr.push(managerObj);
         }
@@ -177,15 +181,15 @@ async function getManagerId(department) {
         return selectedManager[0].id;
     } catch (err) {
         console.error(err)
-    } 
+    }
 };
 
 const endConnection = () => {
     console.log('Goodbye!');
-    connection.end();
+    db.close();
 };
 
-// init();
+init();
 
 // findManager('Engineering');
 

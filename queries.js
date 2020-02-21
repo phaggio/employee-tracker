@@ -25,7 +25,16 @@ WHERE
     ?;
 `
 
-const findManagerQuery = `
+const getRoleId = `
+SELECT
+    id
+FROM
+    role
+WHERE
+    ?;
+`
+
+const findDepartmentManagerQuery = `
 SELECT 
     concat(e.first_name, ' ', e.last_name) as name
     , e.id
@@ -39,10 +48,15 @@ WHERE
     d.name = ? and r.title = 'Manager'
 ;`
 
-
+const addEmployee = `
+INSERT INTO employee
+SET ?
+`
 
 module.exports = {
     viewAllEmployees,
     getDepartmentId,
-    findManagerQuery
+    getRoleId,
+    findDepartmentManagerQuery,
+    addEmployee
 }
