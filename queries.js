@@ -53,7 +53,7 @@ WHERE
     d.name = ? and r.title = 'Manager'
 ;`
 
-const addEmployee = `
+const insertEmployee = `
 INSERT INTO employee
 SET ?
 ;`
@@ -108,13 +108,18 @@ WHERE
 ;
 `
 
+const deleteEmployee = `
+DELETE FROM employee WHERE ?;
+`
+
 module.exports = {
     viewAllEmployees,
     getDepartmentIdByDepartmentName,
     getRoleIdByTitleAndDepartment,
     findDepartmentManagerQuery,
-    addEmployee,
+    insertEmployee,
     getAllDepartments,
     getDepartmentRoles,
-    findEmployee
+    findEmployee,
+    deleteEmployee
 }

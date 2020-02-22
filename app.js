@@ -35,19 +35,20 @@ const db = connectDatabase(sqlConfig);
 
 const init = () => {
     console.log(prompts.brand);
-    menuPrompt();
+    promptMainMenu();
 };
 
 
+init();
 
-async function menuPrompt() {
+async function promptMainMenu() {
     const menuAction = await inquirer.prompt(prompts.mainMenu);
     switch (menuAction.menuAction) {
         case (prompts.prompts.employee):
-            employeePrompt();
+            promptEmployeeMenu();
             break;
         case (prompts.prompts.department):
-            departmentPrompt();
+            promptDepartmentMenu();
             break;
         case (prompts.prompts.exit):
             goodbye();
@@ -57,7 +58,7 @@ async function menuPrompt() {
     };
 };
 
-async function employeePrompt() {
+async function promptEmployeeMenu() {
     const employeeAction = await inquirer.prompt(prompts.employeeMenu);
     switch (employeeAction.employeeAction) {
         case (prompts.prompts.viewAllEmployee):
@@ -70,7 +71,7 @@ async function employeePrompt() {
             promptAddEmployee();
             break;
         case (prompts.prompts.back):
-            menuPrompt();
+            promptMainMenu();
             break;
         case (prompts.prompts.exit):
             goodbye();
@@ -80,20 +81,20 @@ async function employeePrompt() {
     };
 };
 
-async function departmentPrompt() {
+async function promptDepartmentMenu() {
     const departmentAction = await inquirer.prompt(prompts.departmentMenu);
     switch (departmentAction.departmentAction) {
         case (prompts.prompts.viewDepartment):
-            console.log('going to find a emp')
+            console.log('need to view all departments')
             break;
         case (prompts.prompts.addDepartment):
-            console.log('need add emp func')
+            console.log('need add new department func')
             break;
         case (prompts.prompts.deleteDepartment):
-            console.log('need edit emp func')
+            console.log('need to edit department name func')
             break;
         case (prompts.prompts.back):
-            menuPrompt();
+            promptMainMenu();
             break;
         case (prompts.prompts.exit):
             goodbye();
@@ -106,7 +107,7 @@ async function departmentPrompt() {
 async function viewAllEmployee() {
     const allEmployees = await queryAllEmployees();
     console.table(allEmployees);
-    employeePrompt();
+    promptEmployeeMenu();
 };
 
 
@@ -115,7 +116,6 @@ async function viewAllEmployee() {
 async function promptAddEmployee() {
     const employeeObj = await inquirer.prompt(prompts.addEmployee);
     const department = await promptDepartmentSelection();
-    console.log(department)
 
     const roleName = await promptDepartmentRoles(department);
     const departmentId = await getDepartmentIdByDepartmentName(department);
@@ -125,10 +125,7 @@ async function promptAddEmployee() {
     const managerId = await getDepartmentManagerId(department);
 
     const newEmployee = new Employee(employeeObj.firstName, employeeObj.lastName, roleId, managerId);
-    await db.query(query.addEmployee, newEmployee, (err, res) => {
-        if (err) throw err;
-        console.log(`\n${res.affectedRows} employee added.\n`);
-    });
+    await insertNewEmployee(newEmployee);
     viewAllEmployee();
 };
 
@@ -149,12 +146,12 @@ async function promptDepartmentSelection() {
 
 async function promptDepartmentRoles(department) {
     try {
-        const departmentRoleObjArr = await db.query(query.getDepartmentRoles, department);
+        const rolesObj = await queryRolesByDepartment(department);
         const selectedRoleObj = await inquirer.prompt({
             type: 'list',
             message: `What is this employee's role?`,
             name: 'name',
-            choices: departmentRoleObjArr
+            choices: rolesObj
         })
         return selectedRoleObj.name;
     } catch (err) {
@@ -163,22 +160,49 @@ async function promptDepartmentRoles(department) {
 };
 
 async function promptFindEmployeeMethod() {
-    const selectedMethod = await inquirer.prompt(prompts.findEmployee);
-    const method = selectedMethod.method;
+    const selectedMethodObj = await inquirer.prompt(prompts.findEmployee);
+    const method = selectedMethodObj.method;
+    let employee;
     switch (method) {
         case (prompts.prompts.id):
             const idObj = await promptIdInput();
-            const employee = await queryEmployee(idObj);
+            employee = await queryEmployee(idObj);
             console.table(employee);
+            promptFoundEmployee(idObj);
             break;
         case (prompts.prompts.firstName):
-            promptFirstNameInput();
+            const firstNameObj = await promptFirstNameInput();
+            employee = await queryEmployee(firstNameObj);
+            console.table(employee);
+            promptFoundEmployee(firstNameObj);
             break;
         case (prompts.prompts.lastName):
-            promptLastNameInput();
+            const lastNameObj = await promptLastNameInput();
+            employee = await queryEmployee(lastNameObj);
+            console.table(employee);
+            promptFoundEmployee(lastNameObj);
             break;
         case (prompts.prompts.back):
-            employeePrompt();
+            promptEmployeeMenu();
+            break;
+        case (prompts.prompts.exit):
+            goodbye();
+            break;
+    };
+};
+
+async function promptFoundEmployee(obj) {
+    const selectedMethodObj = await inquirer.prompt(prompts.foundEmployee);
+    const method = selectedMethodObj.method;
+    switch (method) {
+        case (prompts.prompts.editEmployee):
+            console.log('editing');
+            break;
+        case (prompts.prompts.deleteEmployee):
+            deleteEmployee(obj);
+            break;
+        case (prompts.prompts.back):
+            promptFindEmployeeMethod();
             break;
         case (prompts.prompts.exit):
             goodbye();
@@ -204,6 +228,9 @@ async function promptLastNameInput() {
     return lastNameObj;
 };
 
+
+
+
 // SQL functions
 async function queryAllEmployees() {
     try {
@@ -216,6 +243,30 @@ async function queryAllEmployees() {
 async function queryEmployee(obj) {
     try {
         return await db.query(query.findEmployee, obj);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function queryRolesByDepartment(department) {
+    const rolesObj = await db.query(query.getDepartmentRoles, department);
+    return rolesObj;
+};
+
+async function insertNewEmployee(Employee) {
+    try {
+        db.query(query.insertEmployee, Employee);
+    } catch (err) {
+        console.error(err);
+    };
+    return;
+};
+
+async function deleteEmployee(obj) {
+    try {
+        await db.query(query.deleteEmployee, obj);
+        console.log('Employees deleted...');
+        viewAllEmployee();
     } catch (err) {
         console.error(err);
     };
