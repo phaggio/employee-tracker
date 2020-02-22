@@ -16,9 +16,11 @@ const prompts = {
     addEmployee: 'Add an Employee',
 
     findEmployee: 'Find an Employee',
+
     id: 'ID',
     firstName: 'First Name',
     lastName: 'Last Name',
+    role: 'Role',
 
     editEmployee: 'Edit Employee(s)',
     deleteEmployee: 'Delete Employee(s)',
@@ -93,6 +95,20 @@ const foundEmployee = {
     ]
 }
 
+const editEmployee = {
+    type: 'list',
+    message: 'What would you like to edit?',
+    name: 'edit',
+    choices: [
+        'First Name',
+        'Last Name',
+        'Department',
+        'Role',
+        'Back',
+        'Exit'
+    ]
+}
+
 const idInupt = {
     type: 'input',
     message: `What is employee's ID?`,
@@ -120,6 +136,7 @@ module.exports = {
     departmentMenu,
     findEmployee,
     foundEmployee,
+    editEmployee,
     idInupt,
     firstNameInupt,
     lastNameInupt

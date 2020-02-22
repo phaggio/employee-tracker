@@ -38,7 +38,6 @@ const init = () => {
     promptMainMenu();
 };
 
-
 init();
 
 async function promptMainMenu() {
@@ -112,8 +111,6 @@ async function viewAllEmployee() {
     promptEmployeeMenu();
 };
 
-
-
 async function promptAddEmployee() {
     const firstNameObj = await promptFirstNameInput();
     const lastNameObj = await promptLastNameInput();
@@ -146,7 +143,7 @@ async function promptDepartmentRoles(department) {
         const rolesObj = await queryRolesByDepartment(department);
         const selectedRoleObj = await inquirer.prompt({
             type: 'list',
-            message: `What is this employee's role?`,
+            message: `What is employee's role?`,
             name: 'name',
             choices: rolesObj
         })
@@ -165,7 +162,7 @@ async function promptDepartmentManager(department) {
         }
         const selectedManagerName = await inquirer.prompt({
             type: 'list',
-            message: `Who is this employee's manager?`,
+            message: `Who is the employee's manager?`,
             name: 'name',
             choices: managerNameArr
         });
@@ -176,8 +173,9 @@ async function promptDepartmentManager(department) {
         return selectedManager[0].id;
     } catch (err) {
         console.error(err)
-    }
+    };
 };
+
 
 async function promptFindEmployeeMethod() {
     const selectedMethodObj = await inquirer.prompt(prompts.findEmployee);
@@ -216,18 +214,45 @@ async function promptFoundEmployee(obj) {
     const method = selectedMethodObj.method;
     switch (method) {
         case (prompts.prompts.editEmployee):
-            console.log('editing');
+            await promptEditEmployee(obj);
+            viewAllEmployee();
             break;
         case (prompts.prompts.deleteEmployee):
             await deleteEmployee(obj);
-            await viewAllEmployee();
-            promptFindEmployeeMethod();
+            viewAllEmployee();
             break;
         case (prompts.prompts.back):
             promptFindEmployeeMethod();
             break;
         case (prompts.prompts.exit):
             goodbye();
+            break;
+    };
+};
+
+async function promptEditEmployee(obj) {
+    const selectedEditObj = await inquirer.prompt(prompts.editEmployee);
+    const edit = selectedEditObj.edit;
+    switch (edit) {
+        case (prompts.prompts.firstName):
+            // need edit first name query
+            break;
+        case (prompts.prompts.lastName):
+            // need edit last name query
+            break;
+        case (prompts.prompts.department):
+            // need edit department query
+            break;
+        case (prompts.prompts.role):
+            // need to prompt all roles associated with those departments
+            break;
+        case (prompts.prompts.back):
+            promptFindEmployeeMethod();
+            break;
+        case (prompts.prompts.exit):
+            goodbye();
+            break;
+        default:
             break;
     };
 };
