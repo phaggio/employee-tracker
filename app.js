@@ -59,6 +59,7 @@ async function promptMainMenu() {
 };
 
 async function promptEmployeeMenu() {
+    console.log('--- Employee ---')
     const employeeAction = await inquirer.prompt(prompts.employeeMenu);
     switch (employeeAction.employeeAction) {
         case (prompts.prompts.viewAllEmployee):
@@ -82,6 +83,7 @@ async function promptEmployeeMenu() {
 };
 
 async function promptDepartmentMenu() {
+    console.log('--- Departments ---')
     const departmentAction = await inquirer.prompt(prompts.departmentMenu);
     switch (departmentAction.departmentAction) {
         case (prompts.prompts.viewDepartment):
@@ -112,36 +114,31 @@ async function viewAllEmployee() {
 
 
 
-
 async function promptAddEmployee() {
-    const employeeObj = await inquirer.prompt(prompts.addEmployee);
+    const firstNameObj = await promptFirstNameInput();
+    const lastNameObj = await promptLastNameInput();
     const department = await promptDepartmentSelection();
-
     const roleName = await promptDepartmentRoles(department);
-    const departmentId = await getDepartmentIdByDepartmentName(department);
 
+    const departmentId = await getDepartmentIdByDepartmentName(department);
     const roleId = await getRoleIdByTitleAndDepartment(roleName, departmentId);
 
-    const managerId = await getDepartmentManagerId(department);
+    const managerId = await promptDepartmentManager(department);
 
-    const newEmployee = new Employee(employeeObj.firstName, employeeObj.lastName, roleId, managerId);
+    const newEmployee = new Employee(firstNameObj.first_name, lastNameObj.last_name, roleId, managerId);
     await insertNewEmployee(newEmployee);
     viewAllEmployee();
 };
 
 async function promptDepartmentSelection() {
-    try {
-        const departmentObjArr = await queryAllDepartments();
-        const selectedDepartmentObj = await inquirer.prompt({
-            type: 'list',
-            message: `What is this employee's department?`,
-            name: 'name',
-            choices: departmentObjArr
-        })
-        return selectedDepartmentObj.name;
-    } catch (err) {
-        console.error(err)
-    };
+    const departmentObjArr = await queryAllDepartments();
+    const selectedDepartmentObj = await inquirer.prompt({
+        type: 'list',
+        message: `What is this employee's department?`,
+        name: 'name',
+        choices: departmentObjArr
+    })
+    return selectedDepartmentObj.name;
 };
 
 async function promptDepartmentRoles(department) {
@@ -156,6 +153,29 @@ async function promptDepartmentRoles(department) {
         return selectedRoleObj.name;
     } catch (err) {
         console.error(err);
+    }
+};
+
+async function promptDepartmentManager(department) {
+    let managerNameArr = ['None'];
+    try {
+        const managerObjArr = await queryDepartmentManager(department);
+        for (const managerObj of managerObjArr) {
+            managerNameArr.push(managerObj);
+        }
+        const selectedManagerName = await inquirer.prompt({
+            type: 'list',
+            message: `Who is this employee's manager?`,
+            name: 'name',
+            choices: managerNameArr
+        });
+        if (selectedManagerName.name === 'None') {
+            return null;
+        };
+        const selectedManager = managerNameArr.filter(manager => manager.name === selectedManagerName.name);
+        return selectedManager[0].id;
+    } catch (err) {
+        console.error(err)
     }
 };
 
@@ -199,7 +219,9 @@ async function promptFoundEmployee(obj) {
             console.log('editing');
             break;
         case (prompts.prompts.deleteEmployee):
-            deleteEmployee(obj);
+            await deleteEmployee(obj);
+            await viewAllEmployee();
+            promptFindEmployeeMethod();
             break;
         case (prompts.prompts.back):
             promptFindEmployeeMethod();
@@ -210,21 +232,20 @@ async function promptFoundEmployee(obj) {
     };
 };
 
+
+
 async function promptIdInput() {
     const idObj = await inquirer.prompt(prompts.idInupt);
-    console.log(idObj);
     return idObj;
 };
 
 async function promptFirstNameInput() {
     const firstNameObj = await inquirer.prompt(prompts.firstNameInupt);
-    console.log(firstNameObj);
     return firstNameObj;
 };
 
 async function promptLastNameInput() {
     const lastNameObj = await inquirer.prompt(prompts.lastNameInupt);
-    console.log(lastNameObj);
     return lastNameObj;
 };
 
@@ -266,7 +287,6 @@ async function deleteEmployee(obj) {
     try {
         await db.query(query.deleteEmployee, obj);
         console.log('Employees deleted...');
-        viewAllEmployee();
     } catch (err) {
         console.error(err);
     };
@@ -275,6 +295,15 @@ async function deleteEmployee(obj) {
 async function queryAllDepartments() {
     try {
         return await db.query(query.getAllDepartments);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function queryDepartmentManager(department) {
+    try {
+        const managerObjArr = await db.query(query.findDepartmentManagerQuery, department);
+        return managerObjArr;
     } catch (err) {
         console.error(err);
     };
@@ -299,28 +328,7 @@ async function getDepartmentIdByDepartmentName(department) {
 };
 
 
-async function getDepartmentManagerId(department) {
-    let managerNameArr = ['None'];
-    try {
-        const managerObjArr = await db.query(query.findDepartmentManagerQuery, department);
-        for (const managerObj of managerObjArr) {
-            managerNameArr.push(managerObj);
-        }
-        const selectedManagerName = await inquirer.prompt({
-            type: 'list',
-            message: `Who is this employee's manager?`,
-            name: 'name',
-            choices: managerNameArr
-        });
-        if (selectedManagerName.name === 'None') {
-            return null;
-        };
-        const selectedManager = managerNameArr.filter(manager => manager.name === selectedManagerName.name);
-        return selectedManager[0].id;
-    } catch (err) {
-        console.error(err)
-    }
-};
+
 
 const goodbye = () => {
     console.clear();

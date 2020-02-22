@@ -68,19 +68,6 @@ const departmentMenu = {
     ]
 }
 
-const addEmployee = [
-    {
-        type: 'input',
-        message: `What is employee's first name?`,
-        name: `firstName`
-    },
-    {
-        type: 'input',
-        message: `What is employee's last name?`,
-        name: `lastName`
-    }
-]
-
 const findEmployee = {
     type: 'list',
     message: 'What would you like to search the employee by?',
@@ -131,7 +118,6 @@ module.exports = {
     mainMenu,
     employeeMenu,
     departmentMenu,
-    addEmployee,
     findEmployee,
     foundEmployee,
     idInupt,
