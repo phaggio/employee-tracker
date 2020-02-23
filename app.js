@@ -13,9 +13,9 @@ const employeePrompt = require('./assets/prompts/employeePrompts');
 const query = require('./assets/queries/queries');
 const queryFunctions = require('./assets/queries/queryFunctions');
 
-const Employee = require('./classes/employee');
-const Department = require('./classes/department');
-const Role = require('./classes/role');
+const Employee = require('./assets/classes/employee');
+const Department = require('./assets/classes/department');
+const Role = require('./assets/classes/role');
 
 const sqlConfig = {
     host: '127.0.0.1',
