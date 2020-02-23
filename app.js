@@ -5,8 +5,14 @@ const inquirer = require('inquirer');
 const util = require('util');
 const cTable = require('console.table');
 const clear = require('clear');
-const prompts = require('./prompts');
-const query = require('./queries');
+
+const userInput = require('./assets/prompts/userInputPrompts');
+const mainPrompt = require('./assets/prompts/mainPrompts');
+const employeePrompt = require('./assets/prompts/employeePrompts');
+
+const query = require('./assets/queries/queries');
+const queryFunctions = require('./assets/queries/queryFunctions');
+
 const Employee = require('./classes/employee');
 const Department = require('./classes/department');
 const Role = require('./classes/role');
@@ -35,25 +41,27 @@ function connectDatabase(config) {
 const db = connectDatabase(sqlConfig);
 
 const init = () => {
-    console.log(prompts.brand);
+    console.log(mainPrompt.brand);
     promptMainMenu();
 };
 
-init();
 
 const employeeMenuHeading = () => console.log(`\n---------- Employee Menu ----------\n`);
 const departmentMenuHeading = () => console.log(`\n---------- Department Menu ----------\n`);
 
 async function promptMainMenu() {
-    const menuAction = await inquirer.prompt(prompts.mainMenu);
+    const menuAction = await inquirer.prompt(mainPrompt.mainMenu);
     switch (menuAction.menuAction) {
-        case (prompts.prompts.employee):
+        case (mainPrompt.selection.employee):
             promptEmployeeMenu();
             break;
-        case (prompts.prompts.department):
+        case (mainPrompt.selection.department):
             promptDepartmentMenu();
             break;
-        case (prompts.prompts.exit):
+        case (mainPrompt.selection.role):
+            console.log('need role menu and queries');
+            break;
+        case (mainPrompt.selection.exit):
             goodbye();
             break;
         default:
@@ -63,21 +71,21 @@ async function promptMainMenu() {
 
 async function promptEmployeeMenu() {
     employeeMenuHeading();
-    const employeeAction = await inquirer.prompt(prompts.employeeMenu);
+    const employeeAction = await inquirer.prompt(employeePrompt.employeeMenu);
     switch (employeeAction.employeeAction) {
-        case (prompts.prompts.viewAllEmployee):
+        case (mainPrompt.selection.viewAllEmployees):
             viewAllEmployee();
             break;
-        case (prompts.prompts.findEmployee):
+        case (mainPrompt.selection.findEmployee):
             promptFindEmployeeMethod();
             break;
-        case (prompts.prompts.addEmployee):
+        case (mainPrompt.selection.addEmployee):
             promptAddEmployee();
             break;
-        case (prompts.prompts.back):
+        case (mainPrompt.selection.back):
             promptMainMenu();
             break;
-        case (prompts.prompts.exit):
+        case (mainPrompt.selection.exit):
             goodbye();
             break;
         default:
@@ -98,10 +106,10 @@ async function promptDepartmentMenu() {
         case (prompts.prompts.deleteDepartment):
             console.log('need to edit department name func')
             break;
-        case (prompts.prompts.back):
+        case (mainPrompt.selection.back):
             promptMainMenu();
             break;
-        case (prompts.prompts.exit):
+        case (mainPrompt.selection.exit):
             goodbye();
             break;
         default:
@@ -109,8 +117,9 @@ async function promptDepartmentMenu() {
     };
 };
 
+
 async function viewAllEmployee() {
-    const allEmployees = await queryAllEmployees();
+    const allEmployees = await queryFunctions.queryAllEmployees();
     console.table(allEmployees);
     promptEmployeeMenu();
 };
@@ -120,6 +129,7 @@ async function viewSelectedEmployee(methodObj) {
     const selectedEmployee = await queryEmployee(methodObj);
     console.table(selectedEmployee);
     promptFoundEmployee(methodObj);
+    // promptFoundEmployee(selectedEmployee);
 };
 
 async function promptAddEmployee() {
@@ -201,10 +211,10 @@ async function promptFindEmployeeMethod() {
         case (prompts.prompts.lastName):
             viewSelectedEmployee(await promptLastNameInput());
             break;
-        case (prompts.prompts.back):
+        case (mainPrompt.selection.back):
             promptEmployeeMenu();
             break;
-        case (prompts.prompts.exit):
+        case (mainPrompt.selection.exit):
             goodbye();
             break;
     };
@@ -221,10 +231,10 @@ async function promptFoundEmployee(methodObj) {
             await deleteEmployee(methodObj);
             viewAllEmployee();
             break;
-        case (prompts.prompts.back):
+        case (mainPrompt.selection.back):
             promptFindEmployeeMethod();
             break;
-        case (prompts.prompts.exit):
+        case (mainPrompt.selection.exit):
             goodbye();
             break;
     };
@@ -262,19 +272,16 @@ async function promptEditEmployee(methodObj) {
             await updateEmployee({manager_id: newManagerId}, methodObj);
             viewSelectedEmployee(methodObj);
             break;
-        case (prompts.prompts.back):
+        case (mainPrompt.selection.back):
             promptFindEmployeeMethod();
             break;
-        case (prompts.prompts.exit):
+        case (mainPrompt.selection.exit):
             goodbye();
             break;
         default:
             break;
     };
 };
-
-
-
 
 
 async function promptIdInput() {
@@ -294,15 +301,6 @@ async function promptLastNameInput() {
 
 
 
-
-// SQL functions
-async function queryAllEmployees() {
-    try {
-        return db.query(query.viewAllEmployees)
-    } catch (err) {
-        console.error(err);
-    };
-};
 
 async function queryEmployee(obj) {
     try {
@@ -396,11 +394,9 @@ async function getDepartmentIdByDepartmentName(department) {
 };
 
 
-
-
 const goodbye = () => {
     console.clear();
     console.log('Goodbye!');
-    db.close();
+    queryFunctions.db.close()
 };
 
