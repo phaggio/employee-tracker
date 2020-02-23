@@ -11,7 +11,7 @@ const brand = `
 
 const prompts = {
     employee: 'Employee',
-    department: 'Department',
+    departmentAndRole: 'Department and Role',
     viewAllEmployee: 'View All Employees',
     addEmployee: 'Add an Employee',
 
@@ -20,7 +20,7 @@ const prompts = {
     id: 'ID',
     firstName: 'First Name',
     lastName: 'Last Name',
-    role: 'Role',
+    manager: 'Manager',
 
     editEmployee: 'Edit Employee(s)',
     deleteEmployee: 'Delete Employee(s)',
@@ -102,8 +102,8 @@ const editEmployee = {
     choices: [
         'First Name',
         'Last Name',
-        'Department',
-        'Role',
+        'Department and Role',
+        'Manager',
         'Back',
         'Exit'
     ]

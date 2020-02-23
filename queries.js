@@ -9,6 +9,8 @@ SELECT
     , r.salary as 'Salary'
     , d.name as 'Department'
     , case when m.last_name is null then ''
+        else m.id end as 'Manager ID'
+    , case when m.last_name is null then ''
         else concat(m.first_name, ' ', m.last_name) end as 'Manager'
 FROM
 	employee e
@@ -51,6 +53,21 @@ FROM
     on r.department_id = d.id 
 WHERE 
     d.name = ? and r.title = 'Manager'
+;`
+
+const findEmployeeDepartments = `
+SELECT DISTINCT
+	d.name as name
+FROM
+	(
+	SELECT role_id
+	FROM employee
+	WHERE ?
+	) a
+	JOIN role r
+	on a.role_id = r.id
+	JOIN department d
+	on r.department_id = d.id
 ;`
 
 const insertEmployee = `
@@ -122,6 +139,7 @@ module.exports = {
     getDepartmentIdByDepartmentName,
     getRoleIdByTitleAndDepartment,
     findDepartmentManagerQuery,
+    findEmployeeDepartments,
     insertEmployee,
     getAllDepartments,
     getDepartmentRoles,

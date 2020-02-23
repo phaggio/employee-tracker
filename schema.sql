@@ -110,3 +110,19 @@ FROM
         left join employee m
         on e.manager_id = m.id
     ) a;
+    
+
+
+SELECT DISTINCT
+	d.name as department_name
+FROM
+	(
+	SELECT role_id
+	FROM employee
+	WHERE first_name = 'Richard'
+	) a
+	JOIN role r
+	on a.role_id = r.id
+	JOIN department d
+	on r.department_id = d.id
+;
