@@ -26,8 +26,8 @@ SELECT
 FROM
 	department
 WHERE
-    ?;
-`
+    ?
+;`
 
 const getRoleIdByTitleAndDepartment = `
 SELECT
@@ -36,8 +36,8 @@ FROM
     role
 WHERE
     title = ?
-    AND department_id = ?;
-`
+    AND department_id = ?
+;`
 
 const findDepartmentManagerQuery = `
 SELECT 
@@ -105,8 +105,13 @@ FROM
     ) a
 WHERE
     ?
-;
-`
+;`
+
+const updateEmployee = `
+UPDATE employee
+SET ?
+WHERE ?
+;`
 
 const deleteEmployee = `
 DELETE FROM employee WHERE ?;
@@ -121,5 +126,6 @@ module.exports = {
     getAllDepartments,
     getDepartmentRoles,
     findEmployee,
+    updateEmployee,
     deleteEmployee
 }

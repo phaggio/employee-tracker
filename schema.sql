@@ -27,6 +27,7 @@ CREATE TABLE employee (
     , manager_id INT NULL
     
     , PRIMARY KEY (id)
+    , FOREIGN KEY (role_id) REFERENCES role(id)
 );
 
 -- update all department data
@@ -41,7 +42,7 @@ VALUES ('Manager', 150000, 1), ('Sr. Analyst', 100000, 1), ('Analyst', 80000, 1)
 
 -- insert sample employee data
 INSERT INTO employee (first_name, last_name, role_id)
-VALUES ('Richard', 'Wang', 5), ('Paul', 'Zhao', 4);
+VALUES ('Jeff', 'Bezos', 1), ('Bill', 'Gates', 7);
 
 SELECT * FROM employee;
 SELECT * FROM department;
@@ -79,3 +80,33 @@ FROM
 	department
 WHERE
 	name = 'Engineering';
+    
+    
+SELECT
+    id as ID
+    , first_name as 'First Name'
+    , last_name as 'Last Name'
+    , title as 'Title'
+    , salary as 'Salary'
+    , department as 'Department'
+    , manager as 'Manager'
+FROM
+    (
+    SELECT
+        e.id
+        , e.first_name
+        , e.last_name
+        , r.title
+        , r.salary
+        , d.name as department
+        , case when m.last_name is null then ''
+            else concat(m.first_name, ' ', m.last_name) end as 'manager'
+    FROM
+        employee e
+        join role r
+        on e.role_id = r.id
+        join department d
+        on r.department_id = d.id
+        left join employee m
+        on e.manager_id = m.id
+    ) a;
