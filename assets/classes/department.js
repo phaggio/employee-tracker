@@ -1,6 +1,5 @@
 class Department {
-    constructor(name, id) {
-        this.id = id;
+    constructor(name) {
         this.name = name;
     };
 };

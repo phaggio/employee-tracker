@@ -147,6 +147,27 @@ async function deleteDepartment(departmentObj) {
     };
 };
 
+async function queryDepartmentIdByname(departmentNameObj) {
+    try {
+        return await db.query(query.getDepartmentIdByDepartmentName, departmentNameObj);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+async function insertNewRole(newRoleArr) {
+    if (!newRoleArr) {
+        return;
+    };
+    for (const role of newRoleArr) {
+        try {
+            db.query(query.insertRole, role);
+        } catch (err) {
+            console.error(err);
+        };
+    };
+};
+
 
 module.exports = {
     db,
@@ -166,5 +187,8 @@ module.exports = {
     deleteEmployee,
 
     insertDepartment,
-    deleteDepartment
+    queryDepartmentIdByname,
+    deleteDepartment,
+
+    insertNewRole
 }

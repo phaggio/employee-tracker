@@ -13,6 +13,7 @@ const queryFunctions = require('./assets/queries/queryFunctions');
 
 const Employee = require('./assets/classes/employee');
 const Department = require('./assets/classes/department');
+const Role = require('./assets/classes/role');
 
 const init = () => {
     console.log(mainPrompt.brand);
@@ -77,7 +78,8 @@ async function promptDepartmentMenu() {
             const newDepartmentObj = await promptUserDepartmentInput();
             const newDepartment = new Department(newDepartmentObj.name);
             await queryFunctions.insertDepartment(newDepartment);
-            viewAllDepartments();
+            const newDepartmentIdObj = await queryFunctions.queryDepartmentIdByname(newDepartment);
+            promptUserRoleInput(newDepartmentIdObj);
             break;
         case (mainPrompt.selection.deleteDepartment):
             const departmentObj = await promptDepartmentDeletion();
@@ -284,8 +286,6 @@ async function promptEditEmployee(idObj) {
     };
 };
 
-
-
 async function promptUserEmployeeInput(method) {
     let inputObj;
     switch (method) {
@@ -305,7 +305,6 @@ async function promptUserEmployeeInput(method) {
 
 async function promptUserDepartmentInput() {
     const newDepartmentObj = await inquirer.prompt(userInputPrompt.departmentNameInput);
-    console.log(newDepartmentObj);
     return newDepartmentObj;
 };
 
@@ -329,6 +328,32 @@ async function promptDepartmentDeletion() {
     return;
 };
 
+async function promptUserRoleInput(departmentIdObj) {
+    console.log('Please add new role for the department.')
+    let addRole = true;
+    let newRoleArr = [];
+    while (addRole) {
+        const newRoleObj = await inquirer.prompt(userInputPrompt.roleInput);
+        const newRole = new Role(newRoleObj.title, newRoleObj.salary, departmentIdObj.id);
+        console.log(newRole);
+        newRoleArr.push(newRole);
+        const responseObj = await inquirer.prompt({
+            type: 'list',
+            message: 'Would you like to add more roles?',
+            name: 'response',
+            choices: [
+                'Yes',
+                'No'
+            ]
+        });
+        if (responseObj.response === 'No') {
+            addRole = false;
+        };
+    };
+    console.log(newRoleArr);
+    await queryFunctions.insertNewRole(newRoleArr);
+    viewAllDepartments();
+};
 
 const goodbye = () => {
     console.log('Goodbye!');
@@ -338,6 +363,6 @@ const goodbye = () => {
 
 
 
-
+// promptUserRoleInput({id: 2});
 
 init();

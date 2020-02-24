@@ -22,10 +22,23 @@ const departmentNameInput = {
     name: 'name'
 }
 
+const roleInput = [
+    {
+        type: 'input',
+        message: `What is the name of the new role?`,
+        name: 'title'
+    },
+    {
+        type: 'input',
+        message: `What is the salary of the new role?`,
+        name: 'salary'
+    }
+]
 
 module.exports = {
     idInupt,
     firstNameInupt,
     lastNameInupt,
-    departmentNameInput
+    departmentNameInput,
+    roleInput
 }

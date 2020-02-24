@@ -53,14 +53,6 @@ WHERE
     d.name = ? and r.title = 'Manager'
 ;`
 
-// const getDepartmentIdByDepartmentName = `
-// SELECT
-// 	id
-// FROM
-// 	department
-// WHERE
-//     ?
-// ;`
 
 // const getRoleIdByTitleAndDepartment = `
 // SELECT
@@ -172,8 +164,22 @@ INSERT INTO department
 SET ?
 ;`
 
+const getDepartmentIdByDepartmentName = `
+SELECT
+	id
+FROM
+	department
+WHERE
+    ?
+;`
+
 const deleteDepartment = `
 DELETE FROM department WHERE id = ?
+;`
+
+const insertRoles = `
+INSERT INTO role
+SET ?
 ;`
 
 
@@ -183,7 +189,7 @@ module.exports = {
     getAllDepartments,
     getDepartmentRoles,
     
-    // getDepartmentIdByDepartmentName,
+    
     // getRoleIdByTitleAndDepartment,
 
     getDepartmentManager,
@@ -196,5 +202,8 @@ module.exports = {
     findEmployeeId,
 
     insertDepartment,
-    deleteDepartment
+    getDepartmentIdByDepartmentName,
+    deleteDepartment,
+
+    insertRoles
 };
