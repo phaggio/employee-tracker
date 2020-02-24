@@ -45,6 +45,9 @@ const selection = {
     addDepartment: 'Add a Department',
     deleteDepartment: 'Delete a Department',
 
+    viewAllRoles: 'View All Roles',
+    deleteRole: 'Delete a Role',
+
     back: 'Back',
     exit: 'Exit'
 }

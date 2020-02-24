@@ -156,12 +156,14 @@ async function queryDepartmentIdByname(departmentNameObj) {
 }
 
 async function insertNewRole(newRoleArr) {
+    console.log(newRoleArr);
     if (!newRoleArr) {
         return;
     };
     for (const role of newRoleArr) {
         try {
-            db.query(query.insertRole, role);
+            await db.query(query.insertRoles, role);
+            console.log(`inserted ${role.title}`)
         } catch (err) {
             console.error(err);
         };

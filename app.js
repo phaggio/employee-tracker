@@ -78,11 +78,14 @@ async function promptDepartmentMenu() {
             const newDepartmentObj = await promptUserDepartmentInput();
             const newDepartment = new Department(newDepartmentObj.name);
             await queryFunctions.insertDepartment(newDepartment);
-            const newDepartmentIdObj = await queryFunctions.queryDepartmentIdByname(newDepartment);
-            promptUserRoleInput(newDepartmentIdObj);
+            const newDepartmentIdObjArr = await queryFunctions.queryDepartmentIdByname(newDepartment);
+            promptUserRoleInput(newDepartmentIdObjArr[0]);
             break;
         case (mainPrompt.selection.deleteDepartment):
             const departmentObj = await promptDepartmentDeletion();
+            if (departmentObj.name === mainPrompt.selection.back) {
+                viewAllDepartments();
+            }
             await queryFunctions.deleteDepartment(departmentObj);
             viewAllDepartments();
             break;
@@ -309,23 +312,22 @@ async function promptUserDepartmentInput() {
 };
 
 async function promptDepartmentDeletion() {
-    const departmentObjArr = await queryFunctions.queryAllDepartments();
+    let departmentObjArr = await queryFunctions.queryAllDepartments();
+    if (!departmentObjArr) {
+        departmentObjArr = [];
+    };
+    departmentObjArr.push({ name: 'Back' });
     const selectedDepartmentObj = await inquirer.prompt({
         type: 'list',
         message: `Which department would you like to remove?`,
         name: 'name',
         choices: departmentObjArr
     });
-    if (!departmentObjArr) {
-        console.error('No department found');
-    } else {
-        for (const departmentObj of departmentObjArr) {
-            if (departmentObj.name === selectedDepartmentObj.name) {
-                return departmentObj;
-            };
+    for (const departmentObj of departmentObjArr) {
+        if (departmentObj.name === selectedDepartmentObj.name) {
+            return departmentObj;
         };
     };
-    return;
 };
 
 async function promptUserRoleInput(departmentIdObj) {
@@ -335,7 +337,6 @@ async function promptUserRoleInput(departmentIdObj) {
     while (addRole) {
         const newRoleObj = await inquirer.prompt(userInputPrompt.roleInput);
         const newRole = new Role(newRoleObj.title, newRoleObj.salary, departmentIdObj.id);
-        console.log(newRole);
         newRoleArr.push(newRole);
         const responseObj = await inquirer.prompt({
             type: 'list',
@@ -355,6 +356,8 @@ async function promptUserRoleInput(departmentIdObj) {
     viewAllDepartments();
 };
 
+
+
 const goodbye = () => {
     console.log('Goodbye!');
     queryFunctions.db.close()
@@ -363,6 +366,5 @@ const goodbye = () => {
 
 
 
-// promptUserRoleInput({id: 2});
 
 init();
