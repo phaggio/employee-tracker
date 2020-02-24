@@ -38,8 +38,8 @@ const selection = {
     lastName: 'Last Name',
     manager: 'Manager',
 
-    editEmployee: 'Edit Employee(s)',
-    deleteEmployee: 'Delete Employee(s)',
+    editEmployee: 'Edit Employee Info',
+    deleteEmployee: 'Delete Employee',
 
     viewAllDepartments: 'View All Departments',
     addDepartment: 'Add a Department',

@@ -134,6 +134,33 @@ const deleteEmployee = `
 DELETE FROM employee WHERE ?;
 `
 
+const findEmployeeId = `
+SELECT
+    id
+FROM
+    (
+    SELECT
+        e.id
+        , e.first_name
+        , e.last_name
+        , r.title
+        , r.salary
+        , d.name as department
+        , case when m.last_name is null then ''
+            else concat(m.first_name, ' ', m.last_name) end as 'manager'
+    FROM
+        employee e
+        join role r
+        on e.role_id = r.id
+        join department d
+        on r.department_id = d.id
+        left join employee m
+        on e.manager_id = m.id
+    ) a
+WHERE
+    ?
+;`
+
 module.exports = {
     viewAllEmployees,
     getDepartmentIdByDepartmentName,
@@ -145,5 +172,6 @@ module.exports = {
     getDepartmentRoles,
     findEmployee,
     updateEmployee,
-    deleteEmployee
+    deleteEmployee,
+    findEmployeeId
 }

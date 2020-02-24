@@ -35,8 +35,84 @@ async function queryAllEmployees() {
     };
 };
 
+async function queryAllDepartments() {
+    try {
+        return await db.query(query.getAllDepartments);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function queryDepartmentManager(departmentName) {
+    try {
+        const managerObjArr = await db.query(query.findDepartmentManagerQuery, departmentName);
+        return managerObjArr;
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function queryRolesByDepartment(departmentName) {
+    try {
+        const roleObjArr = await db.query(query.getDepartmentRoles, departmentName);
+        return roleObjArr;
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function queryEmployeeId(inputObj) {
+    try {
+        const idObjArr = await db.query(query.findEmployeeId, inputObj);
+        let idArr = [];
+        for (const obj of idObjArr) {
+            idArr.push(obj.id);
+        }
+        // return an array of employee IDs
+        return idArr;
+    } catch (err) {
+        console.error(err)
+    };
+};
+
+async function querySelectedEmployee(methodObj) {
+    try {
+        return await db.query(query.findEmployee, methodObj);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function deleteEmployee(idObj) {
+    try {
+        await db.query(query.deleteEmployee, idObj);
+        console.log(`\nEmployee(s) Deleted!\n`);
+    } catch (err) {
+        console.error(err);
+    };
+    return;
+};
+
+async function updateEmployee(updateObj, whereObj) {
+    console.log(updateObj);
+    try {
+        await db.query(query.updateEmployee, [updateObj, whereObj]);
+        console.log(`\nEmployee Updated!\n`)
+    } catch (err) {
+        console.error(err);
+    };
+    return;
+};
+
 
 module.exports = {
     db,
-    queryAllEmployees
+    queryAllEmployees,
+    queryAllDepartments,
+    queryEmployeeId,
+    querySelectedEmployee,
+    queryDepartmentManager,
+    queryRolesByDepartment,
+    updateEmployee,
+    deleteEmployee
 }

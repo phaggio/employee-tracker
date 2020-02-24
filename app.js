@@ -6,7 +6,7 @@ const util = require('util');
 const cTable = require('console.table');
 const clear = require('clear');
 
-const userInput = require('./assets/prompts/userInputPrompts');
+const userInputPrompt = require('./assets/prompts/userInputPrompts');
 const mainPrompt = require('./assets/prompts/mainPrompts');
 const employeePrompt = require('./assets/prompts/employeePrompts');
 
@@ -40,11 +40,13 @@ function connectDatabase(config) {
 
 const db = connectDatabase(sqlConfig);
 
+
 const init = () => {
     console.log(mainPrompt.brand);
     promptMainMenu();
 };
 
+init();
 
 const employeeMenuHeading = () => console.log(`\n---------- Employee Menu ----------\n`);
 const departmentMenuHeading = () => console.log(`\n---------- Department Menu ----------\n`);
@@ -77,7 +79,7 @@ async function promptEmployeeMenu() {
             viewAllEmployee();
             break;
         case (mainPrompt.selection.findEmployee):
-            promptFindEmployeeMethod();
+            promptFindEmployeeMenu();
             break;
         case (mainPrompt.selection.addEmployee):
             promptAddEmployee();
@@ -124,12 +126,11 @@ async function viewAllEmployee() {
     promptEmployeeMenu();
 };
 
-async function viewSelectedEmployee(methodObj) {
-    clear();
-    const selectedEmployee = await queryEmployee(methodObj);
-    console.table(selectedEmployee);
-    promptFoundEmployee(methodObj);
-    // promptFoundEmployee(selectedEmployee);
+async function viewSelectedEmployee(inputObj) {
+    const selectedEmployeeObjArr = await queryFunctions.querySelectedEmployee(inputObj);
+    console.table(selectedEmployeeObjArr);
+    const selectedIdObjArr = await queryFunctions.queryEmployeeId(inputObj);
+    promptSelectOneEmployee(selectedIdObjArr);
 };
 
 async function promptAddEmployee() {
@@ -149,36 +150,52 @@ async function promptAddEmployee() {
 };
 
 async function promptDepartmentSelection() {
-    const departmentObjArr = await queryAllDepartments();
+    const departmentObjArr = await queryFunctions.queryAllDepartments();
     const selectedDepartmentObj = await inquirer.prompt({
         type: 'list',
-        message: `What is employee(s)'s department?`,
+        message: `What is employee's department?`,
         name: 'name',
         choices: departmentObjArr
-    })
-    return selectedDepartmentObj.name;
+    });
+    if (!departmentObjArr) {
+        console.error('No department found');
+    } else {
+        for (const departmentObj of departmentObjArr) {
+            if (departmentObj.name === selectedDepartmentObj.name) {
+                console.log(departmentObj);
+                return departmentObj;
+            };
+        };
+    };
+    return;
 };
 
-async function promptDepartmentRoles(department) {
-    try {
-        const rolesObj = await queryRolesByDepartment(department);
-        const selectedRoleObj = await inquirer.prompt({
-            type: 'list',
-            message: `What is employee's role?`,
-            name: 'name',
-            choices: rolesObj
-        })
-        return selectedRoleObj.name;
-    } catch (err) {
-        console.error(err);
-    }
+async function promptDepartmentRolesSelection(department) {
+    const roleObjArr = await queryFunctions.queryRolesByDepartment(department);
+    const selectedRoleObj = await inquirer.prompt({
+        type: 'list',
+        message: `What is employee's role?`,
+        name: 'name',
+        choices: rolesObj
+    });
+    if (!roleObjArr) {
+        console.error('No role found');
+    } else {
+        for (const roleObj of roleObjArr) {
+            if (roleObj.name === selectedRoleObj.name) {
+                console.log(roleObj);
+                return roleObj;
+            };
+        };
+    };
+    return;
 };
 
 
-async function promptDepartmentManager(department) {
+async function promptDepartmentManagerSelection(departmentName) {
     let managerNameArr = ['None'];
     try {
-        const managerObjArr = await queryDepartmentManager(department);
+        const managerObjArr = await queryFunctions.queryDepartmentManager(departmentName);
         for (const managerObj of managerObjArr) {
             managerNameArr.push(managerObj);
         }
@@ -192,47 +209,61 @@ async function promptDepartmentManager(department) {
             return null;
         };
         const selectedManager = managerNameArr.filter(manager => manager.name === selectedManagerName.name);
-        return selectedManager[0].id;
+        // return manager's employee ID
+        console.log(selectedManager);
+        return selectedManager[0];
     } catch (err) {
         console.error(err)
     };
 };
 
-async function promptFindEmployeeMethod() {
-    const selectedMethodObj = await inquirer.prompt(prompts.findEmployee);
+
+async function promptFindEmployeeMenu() {
+    const selectedMethodObj = await inquirer.prompt(employeePrompt.findEmployee);
     const method = selectedMethodObj.method;
     switch (method) {
-        case (prompts.prompts.id):
-            viewSelectedEmployee(await promptIdInput());
-            break;
-        case (prompts.prompts.firstName):
-            viewSelectedEmployee(await promptFirstNameInput());
-            break;
-        case (prompts.prompts.lastName):
-            viewSelectedEmployee(await promptLastNameInput());
+        case (mainPrompt.selection.id):
+        case (mainPrompt.selection.firstName):
+        case (mainPrompt.selection.lastName):
+            const inputObj = await promptUserInput(method);
+            viewSelectedEmployee(inputObj);
             break;
         case (mainPrompt.selection.back):
             promptEmployeeMenu();
             break;
-        case (mainPrompt.selection.exit):
+        case (mainPrompt.selection.quit):
             goodbye();
+            break;
+        default:
             break;
     };
 };
 
-async function promptFoundEmployee(methodObj) {
-    const selectedMethodObj = await inquirer.prompt(prompts.foundEmployee);
+async function promptSelectOneEmployee(employeeIdObjArr) {
+    const selectedEmployeeIdObj = await inquirer.prompt({
+        type: 'list',
+        message: 'Which employee would you like to edit/delete? (Select Employee ID)',
+        name: 'id',
+        choices: employeeIdObjArr
+    });
+    // show the selected one employee info.
+    console.table(await queryFunctions.querySelectedEmployee(selectedEmployeeIdObj));
+    promptFoundEmployee(selectedEmployeeIdObj);
+};
+
+async function promptFoundEmployee(selectedEmployeeIdObj) {
+    const selectedMethodObj = await inquirer.prompt(employeePrompt.foundEmployee);
     const method = selectedMethodObj.method;
     switch (method) {
-        case (prompts.prompts.editEmployee):
-            await promptEditEmployee(methodObj);
+        case (mainPrompt.selection.editEmployee):
+            await promptEditEmployee(selectedEmployeeIdObj);
             break;
-        case (prompts.prompts.deleteEmployee):
-            await deleteEmployee(methodObj);
+        case (mainPrompt.selection.deleteEmployee):
+            await queryFunctions.deleteEmployee(selectedEmployeeIdObj);
             viewAllEmployee();
             break;
         case (mainPrompt.selection.back):
-            promptFindEmployeeMethod();
+            promptFindEmployeeMenu();
             break;
         case (mainPrompt.selection.exit):
             goodbye();
@@ -240,36 +271,46 @@ async function promptFoundEmployee(methodObj) {
     };
 };
 
-async function promptEditEmployee(methodObj) {
-    const selectedEditObj = await inquirer.prompt(prompts.editEmployee);
+async function promptEditEmployee(idObj) {
+    const selectedEditObj = await inquirer.prompt(employeePrompt.editEmployee);
     const edit = selectedEditObj.edit;
     switch (edit) {
-        case (prompts.prompts.firstName):
-            const newFirstNameObj = await promptFirstNameInput();
-            await updateEmployee(newFirstNameObj, methodObj);
-            viewSelectedEmployee(methodObj);
+        case (mainPrompt.selection.firstName):
+        case (mainPrompt.selection.lastName):
+            const newNameObj = await promptUserInput();
+            await updateEmployee(newNameObj, idObj);
+            promptFoundEmployee(idObj);
             break;
-        case (prompts.prompts.lastName):
-            const newLastNameObj = await promptLastNameInput();
-            await updateEmployee(newLastNameObj, methodObj);
-            viewSelectedEmployee(methodObj);
-            break;
-        case (prompts.prompts.departmentAndRole):
-            const newDepartmentName = await promptDepartmentSelection();
-            const newRoleName = await promptDepartmentRoles(newDepartmentName);
+        case (mainPrompt.selection.department):
+            // need to get manager obj with id
+            const newDepartmentObj = await promptDepartmentSelection();
+            const newRoleObj = await promptDepartmentRolesSelection(newDepartmentObj.name);
+            const newManagerObj = await promptDepartmentManagerSelection(newDepartmentObj.name);
 
-            const departmentId = await getDepartmentIdByDepartmentName(newDepartmentName);
-            const roleId = await getRoleIdByTitleAndDepartment(newRoleName, departmentId);
-        
-            const managerId = await promptDepartmentManager(newDepartmentName);
-
-            await updateEmployee({role_id: roleId, manager_id: managerId}, methodObj);
-            viewSelectedEmployee(methodObj);
+            const updateObj = {
+                role_id: newRoleObj.id,
+                manager_id: newManagerObj.id
+            }
+            await updateEmployee(updateObj, idObj);
+            promptFoundEmployee(idObj);
             break;
-        case (prompts.prompts.manager):
+        // case (mainPrompt.selection.department):
+
+        //     const newDepartmentObj = await promptDepartmentSelection();
+        //     const newRoleObj = await promptDepartmentRolesSelection(newDepartmentObj.name);
+
+        //     const departmentId = await getDepartmentIdByDepartmentName(newDepartmentObj.name);
+        //     const roleId = await getRoleIdByTitleAndDepartment(newRoleName, departmentId);
+
+        //     const managerId = await promptDepartmentManager(newDepartmentName);
+
+        //     await updateEmployee({ role_id: roleId, manager_id: managerId }, methodObj);
+        //     viewSelectedEmployee(methodObj);
+        //     break;
+        case (mainPrompt.selection.manager):
             const departmentNameArr = await querySelectedEmployeeDepartments(methodObj);
             const newManagerId = await promptDepartmentManager(departmentNameArr);
-            await updateEmployee({manager_id: newManagerId}, methodObj);
+            await updateEmployee({ manager_id: newManagerId }, methodObj);
             viewSelectedEmployee(methodObj);
             break;
         case (mainPrompt.selection.back):
@@ -284,35 +325,28 @@ async function promptEditEmployee(methodObj) {
 };
 
 
-async function promptIdInput() {
-    const idObj = await inquirer.prompt(prompts.idInupt);
-    return idObj;
-};
 
-async function promptFirstNameInput() {
-    const firstNameObj = await inquirer.prompt(prompts.firstNameInupt);
-    return firstNameObj;
-};
-
-async function promptLastNameInput() {
-    const lastNameObj = await inquirer.prompt(prompts.lastNameInupt);
-    return lastNameObj;
-};
-
-
-
-
-async function queryEmployee(obj) {
-    try {
-        return await db.query(query.findEmployee, obj);
-    } catch (err) {
-        console.error(err);
+async function promptUserInput(method) {
+    let inputObj;
+    switch (method) {
+        case (mainPrompt.selection.id):
+            inputObj = await inquirer.prompt(userInputPrompt.idInupt);
+            return inputObj;
+        case (mainPrompt.selection.firstName):
+            inputObj = await inquirer.prompt(userInputPrompt.firstNameInupt);
+            return inputObj;
+        case (mainPrompt.selection.lastName):
+            inputObj = await inquirer.prompt(userInputPrompt.lastNameInupt);
+            return inputObj;
+        default:
+            break;
     };
 };
 
+
 async function querySelectedEmployeeDepartments(methodObj) {
     try {
-        const departmentObjArr =  await db.query(query.findEmployeeDepartments, methodObj);
+        const departmentObjArr = await db.query(query.findEmployeeDepartments, methodObj);
         let departmentNameArr = [];
         for (const obj of departmentObjArr) {
             departmentNameArr.push(obj.name);
@@ -323,10 +357,7 @@ async function querySelectedEmployeeDepartments(methodObj) {
     };
 };
 
-async function queryRolesByDepartment(department) {
-    const rolesObj = await db.query(query.getDepartmentRoles, department);
-    return rolesObj;
-};
+
 
 async function insertNewEmployee(Employee) {
     try {
@@ -337,43 +368,27 @@ async function insertNewEmployee(Employee) {
     return;
 };
 
-async function updateEmployee(updateObj, whereObj) {
-    console.log(updateObj);
-    try {
-        await db.query(query.updateEmployee, [updateObj, whereObj]);
-        console.log(`\nEmployee(s) Updated!\n`)
-    } catch (err) {
-        console.error(err);
-    };
-    return;
-};
+// async function updateEmployee(updateObj, whereObj) {
+//     console.log(updateObj);
+//     try {
+//         await db.query(query.updateEmployee, [updateObj, whereObj]);
+//         console.log(`\nEmployee(s) Updated!\n`)
+//     } catch (err) {
+//         console.error(err);
+//     };
+//     return;
+// };
 
-async function deleteEmployee(obj) {
-    try {
-        await db.query(query.deleteEmployee, obj);
-        console.log(`\nEmployee(s) Deleted!\n`);
-    } catch (err) {
-        console.error(err);
-    };
-    return;
-};
+// async function deleteEmployee(idObj) {
+//     try {
+//         await db.query(query.deleteEmployee, idObj);
+//         console.log(`\nEmployee(s) Deleted!\n`);
+//     } catch (err) {
+//         console.error(err);
+//     };
+//     return;
+// };
 
-async function queryAllDepartments() {
-    try {
-        return await db.query(query.getAllDepartments);
-    } catch (err) {
-        console.error(err);
-    };
-};
-
-async function queryDepartmentManager(department) {
-    try {
-        const managerObjArr = await db.query(query.findDepartmentManagerQuery, department);
-        return managerObjArr;
-    } catch (err) {
-        console.error(err);
-    };
-};
 
 async function getRoleIdByTitleAndDepartment(role, departmentId) {
     try {
@@ -395,7 +410,6 @@ async function getDepartmentIdByDepartmentName(department) {
 
 
 const goodbye = () => {
-    console.clear();
     console.log('Goodbye!');
     queryFunctions.db.close()
 };

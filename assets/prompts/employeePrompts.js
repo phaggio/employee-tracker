@@ -26,11 +26,11 @@ const findEmployee = {
 
 const foundEmployee = {
     type: 'list',
-    message: 'What would you like to do with the employee(s)?',
+    message: 'What would you like to do with the selected employee?',
     name: 'method',
     choices: [
-        'Edit Employee(s)',
-        'Delete Employee(s)',
+        'Edit Employee Info',
+        'Delete Employee',
         'Back',
         'Exit'
     ]
@@ -43,7 +43,8 @@ const editEmployee = {
     choices: [
         'First Name',
         'Last Name',
-        'Department and Role',
+        'Department',
+        'Role',
         'Manager',
         'Back',
         'Exit'
@@ -54,5 +55,6 @@ const editEmployee = {
 module.exports = {
     employeeMenu,
     findEmployee,
-    foundEmployee
+    foundEmployee,
+    editEmployee
 }
