@@ -16,7 +16,6 @@ const Department = require('./assets/classes/department');
 const Role = require('./assets/classes/role');
 
 const init = () => {
-    console.log(mainPrompt.brand);
     promptMainMenu();
 };
 
@@ -25,6 +24,8 @@ const departmentMenuHeading = () => console.log(`\n---------- Department Menu --
 const roleMenuHeading = () => console.log(`\n---------- Role Menu ----------\n`);
 
 async function promptMainMenu() {
+    console.clear();
+    console.log(mainPrompt.brand);
     const menuAction = await inquirer.prompt(mainPrompt.mainMenu);
     switch (menuAction.menuAction) {
         case (mainPrompt.selection.employee):
@@ -86,6 +87,7 @@ async function promptDepartmentMenu() {
             const departmentObj = await promptDepartmentDeletion();
             if (departmentObj.name === mainPrompt.selection.back) {
                 viewAllDepartments();
+                break;
             }
             await queryFunctions.deleteDepartment(departmentObj);
             viewAllDepartments();
@@ -129,25 +131,25 @@ async function promptRoleMenu() {
 
 async function viewAllEmployee() {
     const allEmployees = await queryFunctions.queryAllEmployees();
-    console.table(allEmployees);
+    consoleObjArr(allEmployees);
     promptEmployeeMenu();
 };
 
 async function viewAllDepartments() {
     const allDepartments = await queryFunctions.queryAllDepartments();
-    console.table(allDepartments);
+    consoleObjArr(allDepartments);
     promptDepartmentMenu();
 };
 
 async function viewAllRoles() {
     const allRoles = await queryFunctions.queryAllRoles();
-    console.table(allRoles);
+    consoleObjArr(allRoles);
     promptRoleMenu();
 };
 
 async function viewSelectedEmployee(inputObj) {
     const selectedEmployeeObj = await queryFunctions.querySelectedEmployee(inputObj);
-    console.table(selectedEmployeeObj);
+    consoleObjArr(selectedEmployeeObj);
     const selectedIdObjArr = await queryFunctions.queryEmployeeId(inputObj);
     promptSelectOneEmployee(selectedIdObjArr);
 };
@@ -257,7 +259,7 @@ async function promptSelectOneEmployee(employeeIdObjArr) {
 
 async function promptEmployeeSelected(employeeIdObj) {
     const selectedEmployeeObj = await queryFunctions.querySelectedEmployee(employeeIdObj);
-    console.table(selectedEmployeeObj);
+    consoleObjArr(selectedEmployeeObj);
     promptFoundEmployee(employeeIdObj);
 }
 
@@ -290,7 +292,7 @@ async function promptEditEmployee(idObj) {
     switch (edit) {
         case (mainPrompt.selection.firstName):
         case (mainPrompt.selection.lastName):
-            const newNameObj = await promptUserEmployeeInput();
+            const newNameObj = await promptUserEmployeeInput(edit);
             await queryFunctions.updateEmployee(newNameObj, idObj);
             promptEmployeeSelected(idObj);
             break;
@@ -407,6 +409,11 @@ async function promptRoleDeletion() {
             return roleObj;
         };
     };
+};
+
+const consoleObjArr = (objArr) => {
+    console.clear();
+    console.table(objArr);
 };
 
 const goodbye = () => {
