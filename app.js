@@ -147,85 +147,6 @@ async function viewAllRoles() {
     promptRoleMenu();
 };
 
-async function viewSelectedEmployee(inputObj) {
-    const selectedEmployeeObj = await queryFunctions.querySelectedEmployee(inputObj);
-    consoleObjArr(selectedEmployeeObj);
-    const selectedIdObjArr = await queryFunctions.queryEmployeeId(inputObj);
-    promptSelectOneEmployee(selectedIdObjArr);
-};
-
-async function promptAddEmployee() {
-    const firstNameObj = await inquirer.prompt(userInputPrompt.firstNameInupt);
-    const lastNameObj = await inquirer.prompt(userInputPrompt.lastNameInupt);
-    const departmentObj = await promptDepartmentSelection();
-    const roleObj = await promptDepartmentRolesSelection(departmentObj.name);
-    const managerObj = await promptDepartmentManagerSelection(departmentObj.name);
-    const newEmployee = new Employee(firstNameObj.first_name, lastNameObj.last_name, roleObj.id, managerObj.id);
-    await queryFunctions.insertEmployee(newEmployee);
-    viewAllEmployee();
-};
-
-async function promptDepartmentSelection() {
-    const departmentObjArr = await queryFunctions.queryAllDepartments();
-    const selectedDepartmentObj = await inquirer.prompt({
-        type: 'list',
-        message: `What is employee's department?`,
-        name: 'name',
-        choices: departmentObjArr
-    });
-    if (!departmentObjArr) {
-        console.error('No department found');
-    } else {
-        for (const departmentObj of departmentObjArr) {
-            if (departmentObj.name === selectedDepartmentObj.name) {
-                return departmentObj;
-            };
-        };
-    };
-    return;
-};
-
-async function promptDepartmentRolesSelection(departmentName) {
-    const roleObjArr = await queryFunctions.queryRolesByDepartment(departmentName);
-    const selectedRoleObj = await inquirer.prompt({
-        type: 'list',
-        message: `What is employee's role?`,
-        name: 'name',
-        choices: roleObjArr
-    });
-    if (!roleObjArr) {
-        console.error('No role found');
-    } else {
-        for (const roleObj of roleObjArr) {
-            if (roleObj.name === selectedRoleObj.name) {
-                return roleObj;
-            };
-        };
-    };
-    return;
-};
-
-async function promptDepartmentManagerSelection(departmentName) {
-    let managerObjArr = await queryFunctions.queryDepartmentManager(departmentName);
-    if (!managerObjArr) {
-        managerObjArr = [];
-    };
-    managerObjArr.push({ name: 'None', id: null });
-    const selectedManagerObj = await inquirer.prompt({
-        type: 'list',
-        message: `Who is the employee's manager?`,
-        name: 'name',
-        choices: managerObjArr
-    });
-    for (const managerObj of managerObjArr) {
-        if (managerObj.name === selectedManagerObj.name) {
-            return managerObj;
-        };
-    };
-    return;
-};
-
-
 async function promptFindEmployeeMenu() {
     const selectedMethodObj = await inquirer.prompt(employeePrompt.findEmployee);
     const method = selectedMethodObj.method;
@@ -247,6 +168,13 @@ async function promptFindEmployeeMenu() {
     };
 };
 
+async function viewSelectedEmployee(inputObj) {
+    const selectedEmployeeObj = await queryFunctions.querySelectedEmployee(inputObj);
+    consoleObjArr(selectedEmployeeObj);
+    const selectedIdObjArr = await queryFunctions.queryEmployeeId(inputObj);
+    promptSelectOneEmployee(selectedIdObjArr);
+};
+
 async function promptSelectOneEmployee(employeeIdObjArr) {
     const employeeIdObj = await inquirer.prompt({
         type: 'list',
@@ -261,7 +189,7 @@ async function promptEmployeeSelected(employeeIdObj) {
     const selectedEmployeeObj = await queryFunctions.querySelectedEmployee(employeeIdObj);
     consoleObjArr(selectedEmployeeObj);
     promptFoundEmployee(employeeIdObj);
-}
+};
 
 async function promptFoundEmployee(selectedEmployeeIdObj) {
     const selectedMethodObj = await inquirer.prompt(employeePrompt.foundEmployee);
@@ -343,6 +271,78 @@ async function promptUserEmployeeInput(method) {
     };
 };
 
+async function promptAddEmployee() {
+    const firstNameObj = await inquirer.prompt(userInputPrompt.firstNameInupt);
+    const lastNameObj = await inquirer.prompt(userInputPrompt.lastNameInupt);
+    const departmentObj = await promptDepartmentSelection();
+    const roleObj = await promptDepartmentRolesSelection(departmentObj.name);
+    const managerObj = await promptDepartmentManagerSelection(departmentObj.name);
+    const newEmployee = new Employee(firstNameObj.first_name, lastNameObj.last_name, roleObj.id, managerObj.id);
+    await queryFunctions.insertEmployee(newEmployee);
+    viewAllEmployee();
+};
+
+async function promptDepartmentSelection() {
+    const departmentObjArr = await queryFunctions.queryAllDepartments();
+    const selectedDepartmentObj = await inquirer.prompt({
+        type: 'list',
+        message: `What is employee's department?`,
+        name: 'name',
+        choices: departmentObjArr
+    });
+    if (!departmentObjArr) {
+        console.error('No department found');
+    } else {
+        for (const departmentObj of departmentObjArr) {
+            if (departmentObj.name === selectedDepartmentObj.name) {
+                return departmentObj;
+            };
+        };
+    };
+    return;
+};
+
+async function promptDepartmentRolesSelection(departmentName) {
+    const roleObjArr = await queryFunctions.queryRolesByDepartment(departmentName);
+    const selectedRoleObj = await inquirer.prompt({
+        type: 'list',
+        message: `What is employee's role?`,
+        name: 'name',
+        choices: roleObjArr
+    });
+    if (!roleObjArr) {
+        console.error('No role found');
+    } else {
+        for (const roleObj of roleObjArr) {
+            if (roleObj.name === selectedRoleObj.name) {
+                return roleObj;
+            };
+        };
+    };
+    return;
+};
+
+async function promptDepartmentManagerSelection(departmentName) {
+    let managerObjArr = await queryFunctions.queryDepartmentManager(departmentName);
+    if (!managerObjArr) {
+        managerObjArr = [];
+    };
+    managerObjArr.push({ name: 'None', id: null });
+    const selectedManagerObj = await inquirer.prompt({
+        type: 'list',
+        message: `Who is the employee's manager?`,
+        name: 'name',
+        choices: managerObjArr
+    });
+    for (const managerObj of managerObjArr) {
+        if (managerObj.name === selectedManagerObj.name) {
+            return managerObj;
+        };
+    };
+    return;
+};
+
+
 async function promptUserDepartmentInput() {
     const newDepartmentObj = await inquirer.prompt(userInputPrompt.departmentNameInput);
     return newDepartmentObj;
@@ -420,9 +420,6 @@ const goodbye = () => {
     console.log('Goodbye!');
     queryFunctions.db.close()
 };
-
-
-
 
 
 init();
