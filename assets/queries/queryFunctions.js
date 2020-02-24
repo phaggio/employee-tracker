@@ -76,7 +76,6 @@ async function queryEmployeeDepartment(methodObj) {
         if (!departmentObjArr) {
             console.error('No department found!')
         } else {
-            console.log(departmentObjArr);
             return departmentObjArr[0];
         };
     } catch (err) {
@@ -116,7 +115,6 @@ async function insertEmployee(Employee) {
 };
 
 async function updateEmployee(updateObj, whereObj) {
-    console.log(updateObj);
     try {
         await db.query(query.updateEmployee, [updateObj, whereObj]);
         console.log(`\nEmployee Updated!\n`)
@@ -129,7 +127,7 @@ async function updateEmployee(updateObj, whereObj) {
 async function deleteEmployee(idObj) {
     try {
         await db.query(query.deleteEmployee, idObj);
-        console.log(`\nEmployee(s) Deleted!\n`);
+        console.log(`\nEmployee Deleted!\n`);
     } catch (err) {
         console.error(err);
     };
@@ -162,7 +160,6 @@ async function queryDepartmentIdByname(departmentNameObj) {
 }
 
 async function insertNewRole(newRoleArr) {
-    console.log(newRoleArr);
     if (!newRoleArr) {
         return;
     };

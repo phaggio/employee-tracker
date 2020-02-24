@@ -41,6 +41,49 @@ a simple CLI application that manages company's employee relationship and inform
 1. Now, if you chose to delete the selected employee, that employee will be deleted from the database, app will display a view all of all employees, and you will be redirected back to employee menu
 
     <img src="https://github.com/phaggio/employee-tracker/blob/master/images/07.png?raw=true" alt="07" width="400">
+
     <img src="https://github.com/phaggio/employee-tracker/blob/master/images/08.png?raw=true" alt="08" width="400">
+
+1. in the employee menu, you can choose "Add an Employee" to add a new employee to the database
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/09.png?raw=true" alt="09" width="400">
+
+1. you will be prompted for the new employee's first name, last name, department, role, and manager.
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/10.png?raw=true" alt="10" width="400">
+
+1. you will need to provide new employee's information.
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/11.png?raw=true" alt="11" width="400">
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/12.png?raw=true" alt="12" width="400">
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/13.png?raw=true" alt="13" width="400">
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/14.png?raw=true" alt="14" width="400">
+
+1. once you submit new employee's info, you will be redirected to employee menu. Now you can select "Back" to go back to main menu
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/15.png?raw=true" alt="15" width="400">
+
+1. in the main menu, select "Department" to access department functions
+
+1. in the department menu, select "View All Departments" to view all departments currently in the database
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/16.png?raw=true" alt="16" width="400">
+
+1. in the department menu, select "Add a new Department" to add a new department to the database. Please note that if you add a new department, you will also need to add new roles in the department.
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/17.png?raw=true" alt="17" width="400">
+
+1. you'll be prompted for new department name
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/18.png?raw=true" alt="18" width="400">
+
+1. you'll also need to enter info for the new roles in the department.
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/19.png?raw=true" alt="19" width="400">
+
+    <img src="https://github.com/phaggio/employee-tracker/blob/master/images/20.png?raw=true" alt="20" width="400">
 
 1. 

@@ -196,7 +196,6 @@ async function promptDepartmentRolesSelection(departmentName) {
     } else {
         for (const roleObj of roleObjArr) {
             if (roleObj.name === selectedRoleObj.name) {
-                console.log(roleObj);
                 return roleObj;
             };
         };
@@ -387,7 +386,6 @@ async function promptUserRoleInput(departmentIdObj) {
             addRole = false;
         };
     };
-    console.log(newRoleArr);
     await queryFunctions.insertNewRole(newRoleArr);
     viewAllDepartments();
 };
