@@ -27,6 +27,7 @@ function connectDatabase(config) {
 
 const db = connectDatabase(sqlConfig);
 
+
 async function queryAllEmployees() {
     try {
         return db.query(query.viewAllEmployees);
@@ -52,10 +53,33 @@ async function queryRolesByDepartment(departmentName) {
     };
 };
 
+async function insertEmployee(Employee) {
+    try {
+        db.query(query.insertEmployee, Employee);
+    } catch (err) {
+        console.error(err);
+    };
+    return;
+};
+
 async function queryDepartmentManager(departmentName) {
     try {
         const managerObjArr = await db.query(query.getDepartmentManager, departmentName);
         return managerObjArr;
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function queryEmployeeDepartment(methodObj) {
+    try {
+        let departmentObjArr = await db.query(query.findEmployeeDepartment, methodObj);
+        if (!departmentObjArr) {
+            console.error('No department found!')
+        } else {
+            console.log(departmentObjArr);
+            return departmentObjArr[0];
+        };
     } catch (err) {
         console.error(err);
     };
@@ -107,12 +131,17 @@ async function updateEmployee(updateObj, whereObj) {
 
 module.exports = {
     db,
+
     queryAllEmployees,
     queryAllDepartments,
     queryEmployeeId,
     querySelectedEmployee,
     queryDepartmentManager,
     queryRolesByDepartment,
+
+    queryEmployeeDepartment,
+
+    insertEmployee,
     updateEmployee,
     deleteEmployee
 }

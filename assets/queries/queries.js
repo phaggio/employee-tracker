@@ -22,23 +22,21 @@ FROM
     on e.manager_id = m.id
 ;`
 
-const getDepartmentIdByDepartmentName = `
-SELECT
-	id
-FROM
-	department
-WHERE
-    ?
+const getAllDepartments = `
+SELECT *
+FROM department
 ;`
 
-const getRoleIdByTitleAndDepartment = `
+const getDepartmentRoles = `
 SELECT
-    id
+    r.id as id
+    , r.title as name
 FROM
-    role
+    department d
+    join role r
+    on d.id = r.department_id
 WHERE
-    title = ?
-    AND department_id = ?
+    d.name = ?
 ;`
 
 const getDepartmentManager = `
@@ -55,9 +53,31 @@ WHERE
     d.name = ? and r.title = 'Manager'
 ;`
 
-const findEmployeeDepartments = `
+// const getDepartmentIdByDepartmentName = `
+// SELECT
+// 	id
+// FROM
+// 	department
+// WHERE
+//     ?
+// ;`
+
+// const getRoleIdByTitleAndDepartment = `
+// SELECT
+//     id
+// FROM
+//     role
+// WHERE
+//     title = ?
+//     AND department_id = ?
+// ;`
+
+
+
+const findEmployeeDepartment = `
 SELECT DISTINCT
-	d.name as name
+    d.id
+	, d.name as name
 FROM
 	(
 	SELECT role_id
@@ -75,22 +95,6 @@ INSERT INTO employee
 SET ?
 ;`
 
-const getAllDepartments = `
-SELECT *
-FROM department
-;`
-
-const getDepartmentRoles = `
-SELECT
-    r.id as id
-    , r.title as name
-FROM
-    department d
-    join role r
-    on d.id = r.department_id
-WHERE
-    d.name = ?
-;`
 
 const findEmployee = `
 SELECT
@@ -164,15 +168,19 @@ WHERE
 
 module.exports = {
     viewAllEmployees,
-    getDepartmentIdByDepartmentName,
-    getRoleIdByTitleAndDepartment,
-    getDepartmentManager,
-    findEmployeeDepartments,
-    insertEmployee,
+
     getAllDepartments,
     getDepartmentRoles,
+    
+    // getDepartmentIdByDepartmentName,
+    // getRoleIdByTitleAndDepartment,
+
+    getDepartmentManager,
+    findEmployeeDepartment,
+
+    insertEmployee,
     findEmployee,
     updateEmployee,
     deleteEmployee,
     findEmployeeId
-}
+};
