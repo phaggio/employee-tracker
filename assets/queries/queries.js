@@ -41,7 +41,7 @@ WHERE
     AND department_id = ?
 ;`
 
-const findDepartmentManagerQuery = `
+const getDepartmentManager = `
 SELECT 
     concat(e.first_name, ' ', e.last_name) as name
     , e.id
@@ -82,7 +82,8 @@ FROM department
 
 const getDepartmentRoles = `
 SELECT
-    r.title as name
+    r.id as id
+    , r.title as name
 FROM
     department d
     join role r
@@ -165,7 +166,7 @@ module.exports = {
     viewAllEmployees,
     getDepartmentIdByDepartmentName,
     getRoleIdByTitleAndDepartment,
-    findDepartmentManagerQuery,
+    getDepartmentManager,
     findEmployeeDepartments,
     insertEmployee,
     getAllDepartments,

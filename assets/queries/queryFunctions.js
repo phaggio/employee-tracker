@@ -43,19 +43,19 @@ async function queryAllDepartments() {
     };
 };
 
-async function queryDepartmentManager(departmentName) {
+async function queryRolesByDepartment(departmentName) {
     try {
-        const managerObjArr = await db.query(query.findDepartmentManagerQuery, departmentName);
-        return managerObjArr;
+        const roleObjArr = await db.query(query.getDepartmentRoles, departmentName);
+        return roleObjArr;
     } catch (err) {
         console.error(err);
     };
 };
 
-async function queryRolesByDepartment(departmentName) {
+async function queryDepartmentManager(departmentName) {
     try {
-        const roleObjArr = await db.query(query.getDepartmentRoles, departmentName);
-        return roleObjArr;
+        const managerObjArr = await db.query(query.getDepartmentManager, departmentName);
+        return managerObjArr;
     } catch (err) {
         console.error(err);
     };
