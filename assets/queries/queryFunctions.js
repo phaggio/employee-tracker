@@ -44,6 +44,14 @@ async function queryAllDepartments() {
     };
 };
 
+async function queryAllRoles() {
+    try {
+        return await db.query(query.viewAllRoles);
+    } catch (err) {
+        console.error(err);
+    };
+}
+
 async function queryRolesByDepartment(departmentName) {
     try {
         const roleObjArr = await db.query(query.getDepartmentRoles, departmentName);
@@ -170,12 +178,21 @@ async function insertNewRole(newRoleArr) {
     };
 };
 
+async function deleteRole(roleObj) {
+    try {
+        db.query(query.deleteRole, roleObj.id);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
 
 module.exports = {
     db,
 
     queryAllEmployees,
     queryAllDepartments,
+    queryAllRoles,
     
     querySelectedEmployee,
     queryDepartmentManager,
@@ -192,5 +209,7 @@ module.exports = {
     queryDepartmentIdByname,
     deleteDepartment,
 
-    insertNewRole
+    insertNewRole,
+    deleteRole
+    
 }

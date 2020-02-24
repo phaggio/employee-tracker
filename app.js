@@ -2,12 +2,12 @@
 
 const inquirer = require('inquirer');
 const cTable = require('console.table');
-const clear = require('clear');
 
 const userInputPrompt = require('./assets/prompts/userInputPrompts');
 const mainPrompt = require('./assets/prompts/mainPrompts');
 const employeePrompt = require('./assets/prompts/employeePrompts');
 const departmentPrompt = require('./assets/prompts/departmentPrompts');
+const rolePrompt = require('./assets/prompts/rolePrompts');
 
 const queryFunctions = require('./assets/queries/queryFunctions');
 
@@ -22,6 +22,7 @@ const init = () => {
 
 const employeeMenuHeading = () => console.log(`\n---------- Employee Menu ----------\n`);
 const departmentMenuHeading = () => console.log(`\n---------- Department Menu ----------\n`);
+const roleMenuHeading = () => console.log(`\n---------- Role Menu ----------\n`);
 
 async function promptMainMenu() {
     const menuAction = await inquirer.prompt(mainPrompt.mainMenu);
@@ -33,7 +34,7 @@ async function promptMainMenu() {
             promptDepartmentMenu();
             break;
         case (mainPrompt.selection.role):
-            console.log('need role menu and queries');
+            promptRoleMenu();
             break;
         case (mainPrompt.selection.exit):
             goodbye();
@@ -100,6 +101,32 @@ async function promptDepartmentMenu() {
     };
 };
 
+async function promptRoleMenu() {
+    roleMenuHeading();
+    const roleAction = await inquirer.prompt(rolePrompt.roleMenu);
+    switch (roleAction.roleAction) {
+        case (mainPrompt.selection.viewAllRoles):
+            viewAllRoles();
+            break;
+        case (mainPrompt.selection.deleteRole):
+            const roleObj = await promptRoleDeletion();
+            if (roleObj.name === mainPrompt.selection.back) {
+                viewAllRoles();
+                break;
+            }
+            await queryFunctions.deleteRole(roleObj);
+            viewAllRoles();
+            break;
+        case (mainPrompt.selection.back):
+            promptMainMenu();
+            break;
+        case (mainPrompt.selection.exit):
+            goodbye();
+        default:
+            break;
+    };
+};
+
 async function viewAllEmployee() {
     const allEmployees = await queryFunctions.queryAllEmployees();
     console.table(allEmployees);
@@ -110,6 +137,12 @@ async function viewAllDepartments() {
     const allDepartments = await queryFunctions.queryAllDepartments();
     console.table(allDepartments);
     promptDepartmentMenu();
+};
+
+async function viewAllRoles() {
+    const allRoles = await queryFunctions.queryAllRoles();
+    console.table(allRoles);
+    promptRoleMenu();
 };
 
 async function viewSelectedEmployee(inputObj) {
@@ -356,7 +389,24 @@ async function promptUserRoleInput(departmentIdObj) {
     viewAllDepartments();
 };
 
-
+async function promptRoleDeletion() {
+    let roleObjArr = await queryFunctions.queryAllRoles();
+    if (!roleObjArr) {
+        roleObjArr = [];
+    };
+    roleObjArr.push({ name: 'Back' });
+    const selectedRoleObj = await inquirer.prompt({
+        type: 'list',
+        message: `Which role would you like to remove?`,
+        name: 'name',
+        choices: roleObjArr
+    });
+    for (const roleObj of roleObjArr) {
+        if (roleObj.name === selectedRoleObj.name) {
+            return roleObj;
+        };
+    };
+};
 
 const goodbye = () => {
     console.log('Goodbye!');
