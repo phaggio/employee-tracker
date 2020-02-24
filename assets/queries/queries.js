@@ -166,6 +166,17 @@ WHERE
     ?
 ;`
 
+
+const insertDepartment = `
+INSERT INTO department
+SET ?
+;`
+
+const deleteDepartment = `
+DELETE FROM department WHERE id = ?
+;`
+
+
 module.exports = {
     viewAllEmployees,
 
@@ -182,5 +193,8 @@ module.exports = {
     findEmployee,
     updateEmployee,
     deleteEmployee,
-    findEmployeeId
+    findEmployeeId,
+
+    insertDepartment,
+    deleteDepartment
 };

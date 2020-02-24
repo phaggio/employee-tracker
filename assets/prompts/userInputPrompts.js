@@ -16,9 +16,16 @@ const lastNameInupt = {
     name: 'last_name'
 }
 
+const departmentNameInput = {
+    type: 'input',
+    message: `What is the new department name?`,
+    name: 'name'
+}
+
 
 module.exports = {
     idInupt,
     firstNameInupt,
-    lastNameInupt
+    lastNameInupt,
+    departmentNameInput
 }

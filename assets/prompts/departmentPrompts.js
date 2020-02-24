@@ -11,7 +11,6 @@ const departmentMenu = {
     ]
 }
 
-
 module.exports = {
     departmentMenu
 }

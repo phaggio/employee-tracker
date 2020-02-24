@@ -53,14 +53,7 @@ async function queryRolesByDepartment(departmentName) {
     };
 };
 
-async function insertEmployee(Employee) {
-    try {
-        db.query(query.insertEmployee, Employee);
-    } catch (err) {
-        console.error(err);
-    };
-    return;
-};
+
 
 async function queryDepartmentManager(departmentName) {
     try {
@@ -107,10 +100,9 @@ async function querySelectedEmployee(methodObj) {
     };
 };
 
-async function deleteEmployee(idObj) {
+async function insertEmployee(Employee) {
     try {
-        await db.query(query.deleteEmployee, idObj);
-        console.log(`\nEmployee(s) Deleted!\n`);
+        db.query(query.insertEmployee, Employee);
     } catch (err) {
         console.error(err);
     };
@@ -128,20 +120,51 @@ async function updateEmployee(updateObj, whereObj) {
     return;
 };
 
+async function deleteEmployee(idObj) {
+    try {
+        await db.query(query.deleteEmployee, idObj);
+        console.log(`\nEmployee(s) Deleted!\n`);
+    } catch (err) {
+        console.error(err);
+    };
+    return;
+};
+
+
+async function insertDepartment(Department) {
+    try {
+        db.query(query.insertDepartment, Department);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
+async function deleteDepartment(departmentObj) {
+    try {
+        db.query(query.deleteDepartment, departmentObj.id);
+    } catch (err) {
+        console.error(err);
+    };
+};
+
 
 module.exports = {
     db,
 
     queryAllEmployees,
     queryAllDepartments,
-    queryEmployeeId,
+    
     querySelectedEmployee,
     queryDepartmentManager,
     queryRolesByDepartment,
 
+    queryEmployeeId,
     queryEmployeeDepartment,
 
     insertEmployee,
     updateEmployee,
-    deleteEmployee
+    deleteEmployee,
+
+    insertDepartment,
+    deleteDepartment
 }
