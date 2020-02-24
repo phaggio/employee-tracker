@@ -146,6 +146,8 @@ async function viewAllRoles() {
 };
 
 async function viewSelectedEmployee(inputObj) {
+    const selectedEmployeeObj = await queryFunctions.querySelectedEmployee(inputObj);
+    console.table(selectedEmployeeObj);
     const selectedIdObjArr = await queryFunctions.queryEmployeeId(inputObj);
     promptSelectOneEmployee(selectedIdObjArr);
 };
@@ -255,7 +257,8 @@ async function promptSelectOneEmployee(employeeIdObjArr) {
 };
 
 async function promptEmployeeSelected(employeeIdObj) {
-    console.table(await queryFunctions.querySelectedEmployee(employeeIdObj));
+    const selectedEmployeeObj = await queryFunctions.querySelectedEmployee(employeeIdObj);
+    console.table(selectedEmployeeObj);
     promptFoundEmployee(employeeIdObj);
 }
 
@@ -312,7 +315,7 @@ async function promptEditEmployee(idObj) {
             promptEmployeeSelected(idObj);
             break;
         case (mainPrompt.selection.back):
-            promptFindEmployeeMethod();
+            promptFoundEmployee(idObj);
             break;
         case (mainPrompt.selection.exit):
             goodbye();

@@ -61,8 +61,6 @@ async function queryRolesByDepartment(departmentName) {
     };
 };
 
-
-
 async function queryDepartmentManager(departmentName) {
     try {
         const managerObjArr = await db.query(query.getDepartmentManager, departmentName);
