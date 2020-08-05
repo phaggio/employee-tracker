@@ -2,6 +2,7 @@
 
 ## Table of contents
 - [Overview](#overview)
+- [Screenshot](#screenshot)
 - [Set Up Instruction](#set-up-instruction)
 - [Application Instruction](#application-instruction)
 - [Features](#features)
@@ -13,6 +14,10 @@
 
 ## Overview
 a simple CLI application that manages company's employee relationship and information.
+
+
+## Screenshot
+![image](https://raw.githubusercontent.com/phaggio/employee-tracker/master/screenshot/employee-tracker-screenshot.png)
 
 
 ## Set Up Instruction
